@@ -1,0 +1,110 @@
+﻿body {
+  margin:0px;
+  background-image:url('../../images/数据架构体系/bg.jpg');
+  background-position:left top;
+  background-repeat:no-repeat;
+  background-attachment:scroll;
+  background-size:auto;
+  position:static;
+  left:auto;
+  width:770px;
+  margin-left:0;
+  margin-right:0;
+  text-align:left;
+}
+#base {
+  position:absolute;
+  z-index:0;
+}
+#u0 {
+  position:absolute;
+  left:462px;
+  top:267px;
+  width:100px;
+  height:19px;
+}
+#u0_input {
+  position:absolute;
+  left:0px;
+  top:0px;
+  width:100px;
+  height:19px;
+  font-family:'Arial Normal', 'Arial';
+  font-weight:400;
+  font-style:normal;
+  font-size:13px;
+  text-decoration:none;
+  color:#000000;
+  text-align:left;
+  border-color:transparent;
+  outline-style:none;
+}
+#u1 {
+  position:absolute;
+  left:670px;
+  top:267px;
+  width:100px;
+  height:19px;
+}
+#u1_input {
+  position:absolute;
+  left:0px;
+  top:0px;
+  width:100px;
+  height:19px;
+  font-family:'Arial Normal', 'Arial';
+  font-weight:400;
+  font-style:normal;
+  font-size:13px;
+  text-decoration:none;
+  color:#000000;
+  text-align:left;
+  border-color:transparent;
+  outline-style:none;
+}
+#u2 {
+  position:absolute;
+  left:462px;
+  top:297px;
+  width:100px;
+  height:19px;
+}
+#u2_input {
+  position:absolute;
+  left:0px;
+  top:0px;
+  width:100px;
+  height:19px;
+  font-family:'Arial Normal', 'Arial';
+  font-weight:400;
+  font-style:normal;
+  font-size:13px;
+  text-decoration:none;
+  color:#000000;
+  text-align:left;
+  border-color:transparent;
+  outline-style:none;
+}
+#u3 {
+  position:absolute;
+  left:640px;
+  top:296px;
+  width:130px;
+  height:20px;
+  opacity:0;
+}
+#u3_img {
+  position:absolute;
+  left:0px;
+  top:0px;
+  width:130px;
+  height:20px;
+}
+#u4 {
+  position:absolute;
+  left:2px;
+  top:2px;
+  width:126px;
+  visibility:hidden;
+  word-wrap:break-word;
+}

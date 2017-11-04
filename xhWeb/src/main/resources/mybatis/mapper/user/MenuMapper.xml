@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cssnb.users.dao.MenuMapper" >
+
+
+
+<select id="getInit" resultType="java.util.HashMap"  parameterType="map">
+  select ID,SJGNCDMC,GNCDMC,XH,URL,GNCDMS,to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss')RKRQ,to_char(GXRQ,'yyyy-mm-dd hh24:mi:ss')GXRQ from XT_GNCD where SJGNCDMC is null
+  order by XH desc,RKRQ desc	
+</select>
+
+<select id="getXM" resultType="string"  parameterType="map">
+ select yhm from xt_yhb where yhm=#{userId}
+</select>
+
+<select id="initMenuList" resultType="java.util.HashMap"  parameterType="map">
+  select ID,SJGNCDMC,GNCDMC,XH,URL,GNCDMS,to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss')RKRQ,to_char(GXRQ,'yyyy-mm-dd hh24:mi:ss')GXRQ from XT_GNCD where SJGNCDMC is null
+  order by XH desc,RKRQ desc
+</select>
+
+<select id="initLowerMenuList" resultType="java.util.HashMap"  parameterType="map">
+  select ID,SJGNCDMC,GNCDMC,XH,URL,GNCDMS,to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss')RKRQ,to_char(GXRQ,'yyyy-mm-dd hh24:mi:ss')GXRQ from XT_GNCD where SJGNCDID=#{GNCDID}
+  order by XH desc,RKRQ desc
+</select>
+
+<select id="getMenuList" resultType="java.util.HashMap"  parameterType="map"  >
+  select ID,SJGNCDMC,GNCDMC,XH,URL,GNCDMS,to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss')RKRQ,to_char(GXRQ,'yyyy-mm-dd hh24:mi:ss')GXRQ,SFCAYZ from XT_GNCD 
+  <where>
+  	<if test="ID!=null and ID!=''">and ID=#{ID}</if>
+  	<if test="GNCDMC!=null and GNCDMC!=''">and GNCDMC=#{GNCDMC}</if>
+  	<if test="SJGNCDID!=null and SJGNCDID!=''">and SJGNCDID=#{SJGNCDID}</if>
+  	<if test="SJGNCDMC!=null and SJGNCDMC!=''">and SJGNCDMC=#{SJGNCDMC}</if>
+  </where>
+    order by XH desc,RKRQ desc
+</select>
+
+
+<select id="getLowerMenuList" resultType="java.util.HashMap"  parameterType="map"  >
+  select ID,SJGNCDMC,GNCDMC,XH,URL,GNCDMS,to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss')RKRQ,to_char(GXRQ,'yyyy-mm-dd hh24:mi:ss')GXRQ from XT_GNCD 
+ <where>
+	<choose>
+		<when test="SJGNCDID!=null and SJGNCDID!=''"> SJGNCDID=#{SJGNCDID}</when>
+		<otherwise>SJGNCDMC='10000'</otherwise><!-- 默认值 -->
+	</choose>
+ </where>
+  order by XH desc,RKRQ desc
+</select>
+
+
+<insert id="insertMenu" parameterType="java.util.HashMap">
+ 	insert into XT_GNCD
+  (ID,SJGNCDMC,SJGNCDID,GNCDMC,XH,URL,GNCDMS,RKRQ,SFCAYZ)
+values
+  (#{ID},#{SJGNCDMC},#{SJGNCDID},#{GNCDMC},#{XH},#{URL}
+  <choose>
+  	<when test="GNCDMS!=null and GNCDMS!=''">,#{GNCDMS}</when>
+  	<otherwise>,''</otherwise>
+  </choose>
+  ,#{RKRQ},#{CAYZ})
+</insert>
+
+
+<delete id="deleteMenu" parameterType="java.util.HashMap">
+delete from XT_GNCD where ID=#{ID}
+</delete>
+
+
+<delete id="deleteLowerMenu" parameterType="java.util.HashMap">
+delete from XT_GNCD where SJGNCDID=#{GNCDID}
+</delete>
+
+<update id="updateMenu"  parameterType="java.util.HashMap">
+update XT_GNCD SET GNCDMC=#{GNCDMC},XH=#{XH},URL=#{URL},SFCAYZ=#{CAYZ}
+<if test="GNCDMS!=null and GNCDMS!=''">,GNCDMS=#{GNCDMS}</if>
+<if test="USERID!=null and USERID!=''">,USERID=#{USERID}</if>
+<if test="GXRQ!=null and GXRQ!=''">,GXRQ=#{GXRQ}</if>
+<if test="SJGNCDMC!=null ">,SJGNCDMC=#{SJGNCDMC}</if>
+<if test="SJGNCDID!=null ">,SJGNCDID=#{SJGNCDID}</if>
+WHERE ID=#{ID}
+</update>
+
+	<select id="getMenuByUserId" parameterType="string" resultType="java.util.HashMap">
+       select 
+    distinct
+   gncd.id,
+   gncd.gncdmc,
+   gncd.sjgncdmc,
+   gncd.url,
+   gncd.xh,
+   gncd.URL,
+   gncd.sjgncdid,
+   gncd.SFCAYZ
+  from xt_yhb yhb,xt_jsb jsb,xt_yhjsb yhjsb,xt_gncdsqb gncdsqb,xt_gncd gncd
+  where 
+  yhb.id = yhjsb.yhid 
+  and jsb.id = yhjsb.jsid 
+  and gncdsqb.jsid = yhjsb.jsid 
+  and gncd.id = gncdsqb.gncdid
+  and yhb.yhm=#{userId}
+  and yhb.zt='1'
+  order by  gncd.xh
+
+	</select>
+
+
+</mapper>

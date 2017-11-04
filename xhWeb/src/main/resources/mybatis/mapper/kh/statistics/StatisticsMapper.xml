@@ -1,0 +1,505 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cssnb.statistics.dao.StatisticsMapper" >
+
+	<!-- 用户登录监控 根据小时统计登录次数-->
+	<select id="getUserLoginLogListByHour" parameterType="map"  resultType="map">
+	
+	<!-- 用户登录日志表 ：XT_LOGINLOG
+		 用户表：XT_YHB
+		 角色表：XT_JSB
+	 -->
+		select count(*) NUM,
+		extract(year   from   LOGDATE) LOGIN_YEAR ,
+		extract(month   from   LOGDATE) LOGIN_MONTH,
+		extract(day   from   LOGDATE) LOGIN_DAY,
+		to_char(LOGDATE,'hh24')LOGIN_HOUR
+		from XT_LOGINLOG
+		where   to_char(LOGDATE,'yyyy-mm-dd hh24:mi:ss')
+		between  #{start} and #{end}
+		group by extract(year   from   LOGDATE),
+		extract(month   from   LOGDATE),
+		extract(day   from   LOGDATE),to_char(LOGDATE,'hh24')
+		order  by  LOGIN_YEAR,
+		LOGIN_MONTH,
+		LOGIN_DAY,
+		LOGIN_HOUR  asc
+	</select>
+
+
+		<!-- 用户登录日志表 ：XT_LOGINLOG
+				 用户表：XT_YHB
+				 角色表：XT_JSB
+				 通过天统计登录次数
+	 	-->
+	<select id="getUserLoginLogListByDay" parameterType="map"  resultType="map">
+		select count(*) NUM, extract(year   from   LOGDATE) LOGIN_YEAR ,extract(month   from   LOGDATE) LOGIN_MONTH ,
+		extract(day   from   LOGDATE) LOGIN_DAY
+		from XT_LOGINLOG 
+		  where   to_char(LOGDATE,'yyyy-mm-dd hh24:mi:ss')
+		    between  #{start} and #{end}
+		   group by extract(year   from   LOGDATE),
+		   extract(month   from   LOGDATE),
+		   extract(day   from   LOGDATE)
+		      order  by LOGIN_YEAR,
+                 LOGIN_MONTH,
+                 LOGIN_DAY asc
+	</select>
+	
+	<select id="getUserLoginLogListByMonth"  parameterType="map"   resultType="map">
+	
+	<!-- 用户登录日志表 ：XT_LOGINLOG
+		 用户表：XT_YHB
+		 角色表：XT_JSB
+		 通过月统计登陆次数
+	 -->
+		select count(*) NUM, extract(year   from   LOGDATE) LOGIN_YEAR ,extract(month   from   LOGDATE) LOGIN_MONTH 
+		from XT_LOGINLOG 
+		  where   to_char(LOGDATE,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+		   group by extract(year   from   LOGDATE),
+		   extract(month   from   LOGDATE)
+		      order  by  extract(year   from   LOGDATE),
+                  extract(month   from   LOGDATE) asc
+	</select>
+	<!-- 通过年统计登陆次数 -->
+	<select id="getUserLoginLogListByYear"  parameterType="map"  resultType="map">
+	
+	<!-- 用户登录日志表 ：XT_LOGINLOG
+		 用户表：XT_YHB
+		 角色表：XT_JSB
+	 -->
+		select count(*) NUM, extract(year   from   LOGDATE) LOGIN_YEAR 
+		from XT_LOGINLOG 
+		  where   to_char(LOGDATE,'yyyy-mm-dd hh24:mi:ss')  between  #{start} and #{end}
+		   group by extract(year   from   LOGDATE)
+		      order  by  extract(year   from   LOGDATE)  asc
+	</select>
+	
+	<!-- 数据查询监控通过小时查询次数 -->
+	
+	<select id="queryMonitorByHour" parameterType="map"  resultType="map">
+		select count(*) TOTAL, extract(year   from   l.CREATEDATE) TJ_YEAR , extract(month   from   l.CREATEDATE) TJ_MONTH,
+		extract(day   from   l.CREATEDATE) TJ_DAY, to_char(l.CREATEDATE,'hh24')TJ_HOUR
+		from XT_LOG l  
+			where    l.URL ='/notifys/queryfalist' 
+			 and   to_char(l.CREATEDATE,'yyyy-mm-dd hh24:mi:ss')  between  #{start} and #{end} 
+			  group by extract(year   from   l.CREATEDATE),
+			   extract(month   from   l.CREATEDATE),
+			   extract(day   from   l.CREATEDATE),
+			   to_char(l.CREATEDATE,'hh24')
+			      order  by  TJ_YEAR, TJ_MONTH, TJ_DAY,TJ_HOUR asc
+	</select>
+	<!-- 通过天统计查询量 -->
+	<select id="queryMonitorByDay"  parameterType="map"  resultType="map">
+		select  count(*) TOTAL ,
+		extract(year   from   l.CREATEDATE) TJ_YEAR ,extract(month   from    l.CREATEDATE) TJ_MONTH,
+		extract(day   from    l.CREATEDATE) TJ_DAY
+		 from  XT_LOG  l  where  l.URL ='/notifys/queryfalist' 
+		 and   to_char(l.CREATEDATE,'yyyy-mm-dd hh24:mi:ss')  between  #{start} and #{end} 
+		   group by extract(year   from   l.CREATEDATE),
+		   extract(month   from   l.CREATEDATE),
+		   extract(day   from   l.CREATEDATE)
+		      order  by  TJ_YEAR, TJ_MONTH, TJ_DAY asc
+	</select>
+	<!-- 通过月统计查询量 -->
+	<select id="queryMonitorByMonth"  parameterType="map"  resultType="map">
+		select  count(*)TOTAL,
+		extract(month   from    l.CREATEDATE) TJ_MONTH,
+		extract(year   from    l.CREATEDATE) TJ_YEAR
+		 from  XT_LOG  l  where  l.URL ='/notifys/queryfalist' 
+		 and   to_char(l.CREATEDATE,'yyyy-mm-dd hh24:mi:ss')  between  #{start} and #{end} 
+		  group  by extract(year   from    l.CREATEDATE), 
+		    extract(month   from   l.CREATEDATE)
+		    order  by  TJ_YEAR ,TJ_MONTH asc
+	</select>
+	<!-- 通过年统计查询量 -->
+	<select id="queryMonitorByYear"  parameterType="map"  resultType="map">
+		select  count(*) TOTAL,
+		extract(year   from    l.CREATEDATE) TJ_YEAR
+		 from  XT_LOG  l  where  l.URL ='/notifys/queryfalist' 
+		 and   to_char(l.CREATEDATE,'yyyy-mm-dd hh24:mi:ss')  between  #{start} and #{end} 
+		 group by   extract(year   from   l.CREATEDATE)
+		 order  by  TJ_YEAR asc
+	</select>
+	
+	
+	<!-- 数据目录统计分析 -->
+	  <!-- 按年 -->
+	<select id="directoryDataByYear"   parameterType="map"  resultType="map">
+		select count(*) TOTAL, extract(year   from    RKRQ) TJ_YEAR
+			from  XT_GXMLB  where to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between #{start}  and #{end}
+			group by   extract(year   from   RKRQ)
+		   		order  by  extract(year   from   RKRQ) asc
+	</select>
+	
+	<!-- 按月-->
+	<select id="directoryDataByMonth"   parameterType="map"  resultType="map">
+		select count(*) TOTAL, extract(year   from    RKRQ) TJ_YEAR,extract(month   from    RKRQ) TJ_MONTH
+			from  XT_GXMLB  where to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between #{start}  and #{end}
+			group by   extract(year   from   RKRQ),extract(month   from   RKRQ)
+		   		order  by  extract(year   from   RKRQ), extract(month   from   RKRQ) asc
+	</select>
+	
+	  <!-- 按日-->
+	<select id="directoryDataByDay"   parameterType="map"  resultType="map">
+		select count(*) TOTAL, extract(year   from    RKRQ) TJ_YEAR, extract(month   from    RKRQ) TJ_MONTH,
+		extract(day   from    RKRQ) TJ_DAY
+			from  XT_GXMLB  where to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between #{start}  and #{end}
+			group by   
+				extract(year   from   RKRQ),extract(month   from    RKRQ),extract(day   from    RKRQ) 
+		   	order  by 
+		   		TJ_YEAR ,TJ_MONTH,TJ_DAY asc
+	</select>
+	
+	<!-- 数据量分析统计 -->
+	<!-- 获取系统目录表名 -->
+	<select  id="getDirectortyTables"  parameterType="map"  resultType="map">
+		select  GXMLYWMC from XT_GXMLB   where  RKRQ  between #{start}  and  #{end}
+	</select>
+	
+	<!-- 数据量分析统计 -->
+	<!-- 按天获取数据量 -->
+	<select id="getTjDataByDay" parameterType="map"  resultType="map">
+		select SUM(TOTAL)  TOTAL, extract(year   from   RKRQ) TJ_YEAR ,extract(month   from   RKRQ) TJ_MONTH,
+		    extract(day   from   RKRQ) TJ_DAY
+    	from XT_TJ_SJBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	       group by extract(year   from   RKRQ),extract(month   from   RKRQ),
+		    extract(day   from   RKRQ)
+	          order  by  TJ_YEAR,TJ_MONTH,TJ_DAY  asc 
+	</select>
+	
+	<!-- 按月获取数据量 -->
+	<select id="getTjDataByMonth" parameterType="map"  resultType="map">
+		select SUM(TOTAL)  TOTAL, extract(year   from   RKRQ) TJ_YEAR ,extract(month   from   RKRQ) TJ_MONTH
+    	from XT_TJ_SJBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	       group by extract(year   from   RKRQ),extract(month   from   RKRQ)
+	          order  by  TJ_YEAR,TJ_MONTH  asc 
+	</select>
+	
+	<!-- 按年获取数据量 -->
+	<select id="getTjDataByYear" parameterType="map"  resultType="map">
+		select SUM(TOTAL)  TOTAL, extract(year   from   RKRQ) TJ_YEAR
+    	from XT_TJ_SJBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	       group by extract(year   from   RKRQ)
+	          order  by  TJ_YEAR  asc 
+	</select>
+	
+	<!-- 获取资源实体列表 -->
+	<select  id="getZyst"   parameterType="map" resultType="map">
+		select  GXMLMC , GXMLYWMC from XT_GXMLB  where  BMID = #{BMID}
+	</select>
+	
+	
+	
+	<!-- 数据采集 -->
+	<select  id="dataCollectByYear"  parameterType="map" resultType="map">
+		select SUM(TOTAL)  TOTAL, extract(year   from   RKRQ) TJ_YEAR 
+    	from XT_TJ_CJBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	       group by extract(year   from   RKRQ)
+	          order  by  extract(year   from   RKRQ) asc
+	</select>
+	
+	<select  id="dataCollectByMonth"  parameterType="map" resultType="map">
+	select SUM(TOTAL)  TOTAL, extract(year   from   RKRQ) TJ_YEAR ,extract(month   from   RKRQ) TJ_MONTH 
+    	from XT_TJ_CJBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	       group by extract(year   from   RKRQ),
+	       extract(month   from   RKRQ)
+	          order  by  extract(year   from   RKRQ),
+	                  extract(month   from   RKRQ) asc
+	</select>
+	
+	<select  id="dataCollectByDay"  parameterType="map" resultType="map">
+		select SUM(TOTAL)  TOTAL, extract(year   from   RKRQ) TJ_YEAR ,extract(month   from   RKRQ) TJ_MONTH,
+		extract(day   from   RKRQ) TJ_DAY
+    	from XT_TJ_CJBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	       group by extract(year   from   RKRQ),
+	       extract(month   from   RKRQ),
+	        extract(day   from   RKRQ)
+	          order  by  extract(year   from   RKRQ),
+	                  extract(month   from   RKRQ) ,
+	                	 extract(day   from   RKRQ)  asc
+	</select>
+	
+	<!-- 数据清洗统计 之折线图-->
+	<!-- 正常量 -->
+	<select  id="lineNormalDataCleanByYear"  parameterType="map" resultType="map">
+		select SUM(SUCCESS)  TOTAL, extract(year   from   RKRQ) TJ_YEAR 
+    	from XT_TJ_QXBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	      and BMID = #{BMID}
+	       group by extract(year   from   RKRQ)
+	          order  by  extract(year   from   RKRQ) asc
+	</select>
+	
+	<select  id="lineNormalDataCleanByMonth"  parameterType="map" resultType="map">
+	select SUM(SUCCESS)  TOTAL, extract(year   from   RKRQ) TJ_YEAR ,extract(month   from   RKRQ) TJ_MONTH 
+    	from XT_TJ_QXBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	       and BMID = #{BMID}
+	       group by extract(year   from   RKRQ),
+	       extract(month   from   RKRQ)
+	          order  by  extract(year   from   RKRQ),
+	                  extract(month   from   RKRQ) asc
+	</select>
+	
+	<select  id="lineNormalDataCleanByDay"  parameterType="map" resultType="map">
+		select SUM(SUCCESS)  TOTAL, extract(year   from   RKRQ) TJ_YEAR ,extract(month   from   RKRQ) TJ_MONTH,
+		extract(day   from   RKRQ) TJ_DAY
+    	from XT_TJ_QXBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	       and BMID = #{BMID}
+	       group by extract(year   from   RKRQ),
+	       extract(month   from   RKRQ),
+	        extract(day   from   RKRQ)
+	          order  by  extract(year   from   RKRQ),
+	                  extract(month   from   RKRQ) ,
+	                	 extract(day   from   RKRQ)  asc
+	</select>
+	
+	
+	<!-- 异常量 -->
+	<select  id="lineAbnormalDataCleanByYear"  parameterType="map" resultType="map">
+		select SUM(FAIL)  TOTAL, extract(year   from   RKRQ) TJ_YEAR 
+    	from XT_TJ_QXBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	       and BMID = #{BMID}
+	       group by extract(year   from   RKRQ)
+	          order  by  extract(year   from   RKRQ) asc
+	</select>
+	
+	<select  id="lineAbnormalDataCleanByMonth"  parameterType="map" resultType="map">
+	select SUM(FAIL)  TOTAL, extract(year   from   RKRQ) TJ_YEAR ,extract(month   from   RKRQ) TJ_MONTH 
+    	from XT_TJ_QXBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	        and BMID = #{BMID}
+	       group by extract(year   from   RKRQ),
+	       extract(month   from   RKRQ)
+	          order  by  extract(year   from   RKRQ),
+	                  extract(month   from   RKRQ) asc
+	</select>
+	
+	<select  id="lineAbnormalDataCleanByDay"  parameterType="map" resultType="map">
+		select SUM(FAIL)  TOTAL, extract(year   from   RKRQ) TJ_YEAR ,extract(month   from   RKRQ) TJ_MONTH,
+		extract(day   from   RKRQ) TJ_DAY
+    	from XT_TJ_QXBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	        and BMID = #{BMID}
+	       group by extract(year   from   RKRQ),
+	       extract(month   from   RKRQ),
+	        extract(day   from   RKRQ)
+	          order  by  extract(year   from   RKRQ),
+	                  extract(month   from   RKRQ) ,
+	                	 extract(day   from   RKRQ)  asc
+	</select>
+	
+	<!-- 数据清洗统计 之饼图-->
+	<!-- 正常量 -->
+	<select  id="pieNormalDataCleanByYear"  parameterType="map" resultType="map">
+		select SUM(SUCCESS)  TOTAL  from XT_TJ_QXBD 
+	      	where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	      	  and BMID = #{BMID}
+	</select>
+	
+	<select  id="pieNormalDataCleanByMonth"  parameterType="map" resultType="map">
+	select SUM(SUCCESS)  TOTAL from XT_TJ_QXBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	        and BMID = #{BMID}
+	</select>
+	
+	<select  id="pieNormalDataCleanByDay"  parameterType="map" resultType="map">
+		select SUM(SUCCESS)  TOTAL  from XT_TJ_QXBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	        and BMID = #{BMID}
+	</select>
+	
+	
+	<!-- 异常量 -->
+	<select  id="pieAbnormalDataCleanByYear"  parameterType="map" resultType="map">
+		select SUM(FAIL)  TOTAL  from XT_TJ_QXBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	        and BMID = #{BMID}
+	</select>
+	
+	<select  id="pieAbnormalDataCleanByMonth"  parameterType="map" resultType="map">
+	select SUM(FAIL)  TOTAL  from XT_TJ_QXBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	        and BMID = #{BMID}
+	</select>
+	
+	<select  id="pieAbnormalDataCleanByDay"  parameterType="map" resultType="map">
+		select SUM(FAIL)  TOTAL  from XT_TJ_QXBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	        and BMID = #{BMID}
+	</select>
+	
+	
+	
+<!-- 数据比对 之折线图-->
+	
+	<!-- 正常量 -->
+	<select  id="lineNormalDataCompareByYear"  parameterType="map" resultType="map">
+		select SUM(SUCCESS)  TOTAL, extract(year   from   RKRQ) TJ_YEAR 
+    	from XT_TJ_QXBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	      and BMID = #{BMID}
+	       group by extract(year   from   RKRQ)
+	          order  by  extract(year   from   RKRQ) asc
+	</select>
+	
+	<select  id="lineNormalDataCompareByMonth"  parameterType="map" resultType="map">
+	select SUM(SUCCESS)  TOTAL, extract(year   from   RKRQ) TJ_YEAR ,extract(month   from   RKRQ) TJ_MONTH 
+    	from XT_TJ_QXBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	       and BMID = #{BMID}
+	       group by extract(year   from   RKRQ),
+	       extract(month   from   RKRQ)
+	          order  by  extract(year   from   RKRQ),
+	                  extract(month   from   RKRQ) asc
+	</select>
+	
+	<select  id="lineNormalDataCompareByDay"  parameterType="map" resultType="map">
+		select SUM(SUCCESS)  TOTAL, extract(year   from   RKRQ) TJ_YEAR ,extract(month   from   RKRQ) TJ_MONTH,
+		extract(day   from   RKRQ) TJ_DAY
+    	from XT_TJ_QXBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	       and BMID = #{BMID}
+	       group by extract(year   from   RKRQ),
+	       extract(month   from   RKRQ),
+	        extract(day   from   RKRQ)
+	          order  by  extract(year   from   RKRQ),
+	                  extract(month   from   RKRQ) ,
+	                	 extract(day   from   RKRQ)  asc
+	</select>
+	
+	
+	<!--  数据比对 之异常量 -->
+	<select  id="lineAbnormalDataCompareByYear"  parameterType="map" resultType="map">
+		select SUM(FAIL)  TOTAL, extract(year   from   RKRQ) TJ_YEAR 
+    	from XT_TJ_QXBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	       and BMID = #{BMID}
+	       group by extract(year   from   RKRQ)
+	          order  by  extract(year   from   RKRQ) asc
+	</select>
+	
+	<select  id="lineAbnormalDataCompareByMonth"  parameterType="map" resultType="map">
+	select SUM(FAIL)  TOTAL, extract(year   from   RKRQ) TJ_YEAR ,extract(month   from   RKRQ) TJ_MONTH 
+    	from XT_TJ_QXBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	        and BMID = #{BMID}
+	       group by extract(year   from   RKRQ),
+	       extract(month   from   RKRQ)
+	          order  by  extract(year   from   RKRQ),
+	                  extract(month   from   RKRQ) asc
+	</select>
+	
+	<select  id="lineAbnormalDataCompareByDay"  parameterType="map" resultType="map">
+		select SUM(FAIL)  TOTAL, extract(year   from   RKRQ) TJ_YEAR ,extract(month   from   RKRQ) TJ_MONTH,
+		extract(day   from   RKRQ) TJ_DAY
+    	from XT_TJ_QXBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	        and BMID = #{BMID}
+	       group by extract(year   from   RKRQ),
+	       extract(month   from   RKRQ),
+	        extract(day   from   RKRQ)
+	          order  by  extract(year   from   RKRQ),
+	                  extract(month   from   RKRQ) ,
+	                	 extract(day   from   RKRQ)  asc
+	</select>
+	
+	<!-- 数据比对 之饼图-->
+	<!-- 正常量 -->
+	<select  id="pieNormalDataCompareByYear"  parameterType="map" resultType="map">
+		select SUM(SUCCESS)  TOTAL  from XT_TJ_QXBD 
+	      	where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	      	  and BMID = #{BMID}
+	</select>
+	
+	<select  id="pieNormalDataCompareByMonth"  parameterType="map" resultType="map">
+	select SUM(SUCCESS)  TOTAL from XT_TJ_QXBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	        and BMID = #{BMID}
+	</select>
+	
+	<select  id="pieNormalDataCompareByDay"  parameterType="map" resultType="map">
+		select SUM(SUCCESS)  TOTAL  from XT_TJ_QXBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	        and BMID = #{BMID}
+	</select>
+	
+	
+	<!-- 异常量 -->
+	<select  id="pieAbnormalDataCompareByYear"  parameterType="map" resultType="map">
+		select SUM(FAIL)  TOTAL  from XT_TJ_QXBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	        and BMID = #{BMID}
+	</select>
+	
+	<select  id="pieAbnormalDataCompareByMonth"  parameterType="map" resultType="map">
+	select SUM(FAIL)  TOTAL  from XT_TJ_QXBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	        and BMID = #{BMID}
+	</select>
+	
+	<select  id="pieAbnormalDataCompareByDay"  parameterType="map" resultType="map">
+		select SUM(FAIL)  TOTAL  from XT_TJ_QXBD 
+	      where   to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') between  #{start} and #{end}
+	        and BMID = #{BMID}
+	</select>
+	
+	<select  id="datacleanByJidu" resultType="map">
+		select count(*) NUM, extract(year   from   RKSJ) RK_YEAR ,extract(month   from   RKSJ) RK_MONTH 
+         from TEST_DATACLEAN 
+		  where   to_char(RKSJ,'yyyy-mm-dd hh24:mi:ss')
+		   between  ('2012-08-10 12:00:00')  and ('2016-08-20 12:00:00') 
+		   and ISNORMAOL = '1'
+		   group by extract(year   from   RKSJ),
+		   extract(month   from   RKSJ)  order  by RK_YEAR asc, RK_MONTH  asc
+	</select>
+	
+	
+	<!-- 饼状图统计  -->
+	<select  id="pieChartQuery">
+		select  count(*) NUM  from TEST_DATACLEAN where    to_char(RKSJ,'yyyy-mm-dd hh24:mi:ss')
+		between #{start}  and  #{end}   and ISNORMAOL = #{isnormal}  
+	</select>
+	
+	<!-- 获取十五个部门的  法人   信用查询情况 -->
+	<select  id="frQueryForeachBM"  resultType="map">
+		select count(*)TOTAL, b.BMMC BMMC  from XT_BMB b left join XT_YHB y on  b.ID = y.BMID 
+			join XT_FCXLY c on   c.USERID = y.ID  group by  b.BMMC order by b.BMMC
+	</select>
+	
+	<!-- 获取十五个部门的  自然人  信用查询情况 -->
+	<select  id="zrQueryForeachBM"  resultType="map">
+		select count(*)TOTAL, b.BMMC BMMC  from XT_BMB b left join XT_YHB y on  b.ID = y.BMID 
+			join XT_CXLY c on   c.USERID = y.ID  group by  b.BMMC order by b.BMMC
+	</select>
+	
+	<select  id="getBMS"  resultType="map">
+		select BMMC  from XT_BMB order  by  BMMC
+	</select>
+	
+	<!-- 某段时间内自然人查询统计 -->
+	<select  id="zrquarterQuery"  parameterType="map"  resultType="map">
+		select count(*)TOTAL, b.BMMC BMMC,b.ID BMID, extract(month   from   c.RKRQ) RK_MONTH  from XT_BMB b left join XT_YHB y on  b.ID = y.BMID 
+      join XT_CXLY c on   c.USERID = y.ID where  to_char(c.RKRQ,'yyyy-mm-dd hh24:mi:ss')
+		between  #{start}  and   #{end}
+       group by  b.BMMC, extract(month   from   c.RKRQ), b.ID order by b.BMMC,extract(month   from   c.RKRQ)
+	</select>
+	
+	<!-- 某段时间内法人查询统计 -->
+	<select  id="frquarterQuery"  parameterType="map"  resultType="map">
+		select count(*)TOTAL, b.BMMC BMMC,b.ID BMID, extract(month   from   c.RKRQ) RK_MONTH  from XT_BMB b left join XT_YHB y on  b.ID = y.BMID 
+      join XT_FCXLY c on   c.USERID = y.ID where  to_char(c.RKRQ,'yyyy-mm-dd hh24:mi:ss')
+		between  #{start}  and   #{end}
+       group by  b.BMMC, extract(month   from   c.RKRQ), b.ID order by b.BMMC,extract(month   from   c.RKRQ)
+	</select>
+	
+</mapper>

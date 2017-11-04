@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cssnb.baseframework.quickstart.dao.cjpt.CollectionMapper" >
+
+    <!-- <select id="findUserList" resultType="map" >
+    	select a.*, b.COUNT ,b.EXCEPTION_COUNT from res_collection_task a ,  RES_COLLECTION_LOG_STATS b where a.ID=b.TASK_ID
+    </select> -->
+    
+    <!-- 获取任务列表 -->
+    <select id="getCollectionTaskList" resultType="map">
+    	<![CDATA[
+    	select 
+		distinct g.RESOURCE_NAME_CN,a.res_id,a.sum_count,a.sum_EXCEPTION_COUNT,a.max_LAST_UPDATE_TIME last_update_time,
+		decode(c.t_sum_count,null,0,c.t_sum_count) t_count,decode(c.t_sum_ex_count,null,0,c.t_sum_ex_count) t_exception_count,d.STATUS_NAME,e.MODE_NAME,f.department_name,h.frequency_name
+		from 
+		(SELECT SUM(COUNT) sum_count,SUM(EXCEPTION_COUNT) sum_EXCEPTION_COUNT,to_char(MAX(B.LAST_UPDATE_TIME),'yyyy-mm-dd hh24:mi:ss') max_LAST_UPDATE_TIME,RES_ID
+		FROM res_collection_log_stats A,res_collection_task B
+		WHERE A.TASK_ID=B.ID GROUP BY RES_ID ) A,
+		res_collection_task b,
+		(select sum(count) t_sum_count,sum(EXCEPTION_COUNT) t_sum_ex_count,task_id from res_collection_log_stats 
+		where sysdate-1<LAST_UPDATE_TIME and sysdate>=LAST_UPDATE_TIME
+		group by task_id) c,
+		BM_ORDER_STATUS d,
+		BM_COLLECTION_MODE e,
+		BM_DEPARTMENT f,
+		res_table g,
+		BM_ORDER_FREQUENCY h
+		]]>
+		<where>
+		a.RES_ID = b.res_id and b.id=c.task_id(+) and b.status = d.ID and b.collection_mode = e.ID and a.RES_ID = g.Id and g.department_id = f.DEPARTMENT_ID and b.FREQUENCY = h.ID and a.res_id = g.RESOURCE_ID
+		<if test='resname != null and resname != "" '>
+			and g.RESOURCE_NAME_CN like '%'||#{resname}||'%'
+		</if>
+		<if test='department != null and department != "" '>
+			and f.department_name like ''||#{department}||''
+		</if>
+		</where>
+    </select>
+    
+    <select id="collectionTaskList1" resultType="map">
+    	select NVL(a.COUNT, 0) count,NVL(a.EXCEPTION_COUNT,0) EXCEPTION_COUNT, c.resource_name_cn resname, d.mode_name, 
+		e.frequency_name, c.department_id, f.department_name department, a.task_id
+		from RES_COLLECTION_LOG_STATS a,
+		RES_COLLECTION_TASK b,
+		res_table c,
+		bm_collection_mode d,
+		bm_order_frequency e,
+		bm_department f
+		<where> 
+		a.task_id=b.id and TRUNC(a.LOG_DATE,'dd') = TRUNC(SYSDATE,'dd')
+		and b.res_id = c.resource_id and b.collection_mode = d.id and b.frequency = e.id and c.department_id = f.department_id
+		<if test='resname != null and resname != "" '>
+			and c.resource_name_cn like '%'||#{resname}||'%'
+		</if>
+		<if test='department != null and department != "" '>
+			and f.department_name like ''||#{department}||''
+		</if>
+		</where>
+    </select>
+    
+    <select id="collectionTaskList2" resultType="map">
+    	select SUM(a.COUNT) totalcnt,SUM(a.EXCEPTION_COUNT) TOTALEXPCNT ,to_char(max(a.last_update_time),'yyyy-mm-dd hh24:mi:ss')last_update_time, a.task_id
+		from RES_COLLECTION_LOG_STATS a,
+		RES_COLLECTION_TASK b
+		where a.task_id=b.id group by a.task_id
+    </select>
+    
+    <!-- 获取资源列表 -->
+    <select id="resList" resultType="map">
+    	select  a.resource_id resid, a.resource_name_cn resname, b.department_name department, c.mode_name state
+		from 
+		res_table a,
+		bm_department b,
+		bm_collection_mode c
+		<where> 
+		a.department_id = b.department_id and a.state = c.id
+		<if test='resname != null and resname != "" '>
+			and a.resource_name_cn like '%'||#{resname}||'%'
+		</if>
+		<if test='department != null and department != "" '>
+			and b.department_id like ''||#{department}||''
+		</if>
+		</where>
+    </select>
+    
+    <select id="resListForUser" resultType="map">
+    	select  a.resource_id resid, a.resource_name_cn resname, b.department_name department, c.mode_name state
+		from 
+		res_table a,
+		bm_department b,
+		bm_collection_mode c
+		<where> 
+		a.department_id = b.department_id and a.state = c.id and a.department_id=#{department_id}
+		<if test='resname != null and resname != "" '>
+			and a.resource_name_cn like '%'||#{resname}||'%'
+		</if>
+		</where>
+    </select>
+    
+    <!-- 获取部门列表 -->
+    <select id="getDepartment" resultType="map">
+    	select * from BM_DEPARTMENT
+    </select>
+    
+    <!-- 获取审核状态列表 -->
+    <select id="getRegStatus" resultType="map">
+    	    select * from bm_reg_status
+    </select>
+    
+    <!-- 修改页面条件，获取任务编号 -->
+    <select id="getTaskId" resultType="string" parameterType="map">
+    	SELECT ID FROM RES_COLLECTION_TASK A WHERE A.RES_ID=#{RES_ID} AND TO_CHAR(LAST_UPDATE_TIME,'yyyy-mm-dd hh24:mi:ss')=#{LAST_UPDATE_TIME}
+    </select>
+    
+    <!-- 删除任务 -->
+     <delete id="deletedata" parameterType="string">
+    	delete from res_reg where ID = #{id}
+    </delete>
+    
+     
+    <!-- 获取任务详情 -->
+    <select id="getTaskInfo" resultType="map" parameterType="String">
+    select a.id, a.res_id, b.resource_name_cn resname, a.frequency, b.resource_description description
+    from 
+    res_reg a,
+    res_table b
+    where a.id=#{id} and a.res_id=b.resource_id
+    </select>
+    
+    <!-- 相同resid中， TAG的条目是否有多条-->
+    <select id="isRes_TagMoreThan1" resultType="int" parameterType="String">
+    	select count(TAG) from res_tag where res_id=#{RES_ID}
+    </select>
+    
+    <!-- 获取TAG -->
+    <select id="getEditTag" parameterType="String" resultType="String">
+    	select b.tag
+		from
+		(select MAX(t.last_update_time)last_update_time from res_tag t where res_id=#{RES_ID})a,
+		res_tag b
+		where b.res_id=#{RES_ID} and a.last_update_time=b.last_update_time
+    </select>
+    
+    <!-- 获取TAG -->
+    <select id="getOneTag" parameterType="String" resultType="String">
+    	SELECT TAG FROM RES_TAG WHERE RES_ID=#{RES_ID}
+    </select>
+    
+    <!-- 获取一张资源表的详细信息 -->
+    <select id="getTableInfo" resultType="map" parameterType="String">
+    	select * from res_table t where t.resource_id=#{RES_ID}
+    </select>
+    
+    <!-- 删除一条任务 -->
+    <delete id="deleteInfo" parameterType="string">
+    	delete from res_collection_task where ID=#{id}
+    </delete>
+    
+    <!-- 插入一条任务 -->
+    <insert id="insertTask" parameterType="map">
+    	INSERT INTO res_collection_task (ID, RES_ID, COLLECTION_MODE, FREQUENCY, STATUS, LAST_UPDATE_TIME) VALUES (#{id},#{res_id},#{collection_mode},#{frequency},1,systimestamp)
+    </insert>
+    
+    <!-- 插入一条申请 -->
+    <insert id="insertReg" parameterType="map">
+    	insert into res_reg 
+		(ID,RES_ID,REG_STATUS,OPERATOR,LAST_UPDATE_TIME,COLLECTION_MODE,FREQUENCY)
+		values
+		(#{ID},#{RES_ID},#{REG_STATUS},#{OPERATOR},systimestamp,#{COLLECTION_MODE},#{FREQUENCY})
+    </insert>
+    
+    <!-- 查询是否有正在审核和已审核的申请 -->
+    <select id="ifPass" parameterType="map" resultType="int">
+    	select count(*) from res_reg where RES_ID=#{RES_ID} and REG_STATUS!='2'
+    </select>
+    
+    <!-- 查询reg表所有记录(管理员) -->
+    <select id="getAuditListForManager" resultType="auditEntity" parameterType="map">
+    	select a.ID, b.resource_name_cn resname,c.frequency_name frequency,to_char(a.LAST_UPDATE_TIME,'YYYY-MM-DD hh24:mi:ss')LAST_UPDATE_TIME,
+		e.status_name status, d.department_name departmentname, d.department_id departmentid, a.REG_STATUS statusid
+		from
+		res_reg a,
+		res_table b,
+		bm_order_frequency c,
+		bm_department d,
+   	 	bm_reg_status e
+		<where>
+		a.RES_ID=b.resource_id and a.frequency=c.id and b.department_id=d.department_id and a.reg_status=e.id
+		<if test='resname != null and resname != "" '>
+			and b.resource_name_cn like '%'||#{resname}||'%'
+		</if>
+		<if test='departmentid != null and departmentid != "" '>
+			and d.department_id like  ''||#{departmentid}||''
+		</if>
+		<if test='regstatus != null and regstatus != "" '>
+			and e.id like  ''||#{regstatus}||''
+		</if>
+		</where>
+		
+    </select>
+    
+     <!-- 查询reg表所有记录(用户) -->
+    <select id="getAuditListForUser" resultType="auditEntity">
+    	select a.ID, b.resource_name_cn resname,c.frequency_name frequency,to_char(a.LAST_UPDATE_TIME,'YYYY-MM-DD hh24:mi:ss')LAST_UPDATE_TIME,
+		e.status_name status, d.department_name departmentname, d.department_id departmentid, a.REG_STATUS statusid
+		from
+		(select * from res_reg)a,
+		res_table b,
+		bm_order_frequency c,
+		bm_department d,
+   	 	bm_reg_status e
+   	 	<where>
+   	 	a.RES_ID=b.resource_id and a.frequency=c.id and b.department_id=d.department_id and a.reg_status=e.id and b.department_id=#{DEPARTMENT_ID} 
+   	 	<if test='resname != null and resname != "" '>
+			and b.resource_name_cn like '%'||#{resname}||'%'
+		</if>
+		<if test='regstatus != null and regstatus != "" '>
+			and e.id like  ''||#{regstatus}||''
+		</if>
+   	 	</where>
+		
+		
+    </select>
+    
+    <!-- 修改资源详细 -->
+    <update id="updateResTable" parameterType="map">
+    	update res_table  set resource_description = #{RESOURCE_DESCRIPTION} where resource_id = #{RES_ID}
+    </update>
+    
+    <!-- 插入一条TAG -->
+    <insert id="insertTag" parameterType="map">
+    	insert into res_tag (RES_ID, TAG,Last_Update_Time)values (#{res_id},#{singleTag},SYSTIMESTAMP)
+    </insert>
+    <!-- <update id="addTag" parameterType="map">
+    	update res_tag  
+		set tag=(select substr(tag,0) from res_tag where res_id=#{RES_ID})||#{TAG}, last_update_time= systimestamp 
+		where res_id=#{RES_ID}
+    </update> -->
+    
+    <!-- 更新任务详细	 -->
+    <update id="updateTask" parameterType="map">
+    	 update res_reg
+        <set>
+            <if test='RES_ID != null and RES_ID != ""'>
+                RES_ID = #{RES_ID},
+            </if>
+            <if test='COLLECTION_MODE != null and COLLECTION_MODE != ""'>
+                COLLECTION_MODE = #{COLLECTION_MODE},
+            </if>
+            <if test='FREQUENCY != null and FREQUENCY != ""'>
+                FREQUENCY = #{FREQUENCY},
+            </if>
+            	LAST_UPDATE_TIME = systimestamp
+        </set>
+        where ID = #{ID}
+    </update>
+    
+    <!-- 更新TAG -->
+    <update id="updateTag" parameterType="map">
+    	update res_tag y set y.tag=#{TAG},y.last_update_time=SYSTIMESTAMP where y.res_id=#{RES_ID}
+    </update>
+  
+  	<!-- 获取资源表所有表名 -->
+  	<select id="getResId" resultType="Table" parameterType="int">
+  		 	select a.resource_id ID,a.resource_name_cn TABLE_NAME,a.department_id
+		    from res_table a,
+		    sys_user b
+		    where a.department_id=b.department_id and b.user_id=#{userid}
+  	</select>
+  	
+  	<!-- 根据resid获取表名字 -->
+  	<select id="getResTableName" resultType="String" parameterType="int">
+  		select resource_name_cn from res_table where resource_id=#{resource_id}
+  	</select>
+  
+  	<!-- 获取资源表字段名 -->
+  	<select id="getResName" resultType="map" parameterType="string">
+  		select RES_SHOW_NAME from res_field  where res_table_id=#{res_table_id} and RES_SHOW_NAME is not null
+  	</select>
+	
+ 	<!-- 获取申请审核列表（管理员）audit -->
+<!--	<select id="getAuditList" resultType="auditEntity" parameterType="map">
+		select a.id, b.resource_name_cn resname ,c.frequency_name frequency,d.status_name status,
+       	to_char(a.last_update_time,'yyyy-mm-dd hh24:mi:ss')last_update_time,e.department_name
+		from
+		res_collection_task a,
+		res_table b,
+		bm_order_frequency c,
+		bm_order_status d,
+		bm_department e
+		<where>
+		a.res_id=b.resource_id and a.frequency=c.id and a.status=d.id and e.department_id=b.department_id
+		<if test='resname != null and resname != "" '>
+			and b.resource_name_cn like ''||#{resname}||''
+		</if>
+		<if test='departmentname != null and departmentname != "" '>
+			and e.department_name like  ''||#{departmentname}||''
+		</if>
+		</where>
+	</select> -->
+	
+	<!-- 获取频率 -->
+	<select id="getFrequency" resultType="Frequency">
+		select ID, FREQUENCY_NAME from bm_order_frequency 
+	</select>
+	
+	<!-- 获取申请审核详细信息 -->
+	<select id="getAuditDetail" resultType="auditDetail" parameterType="String">
+		select a.id, a.res_id, d.department_name, e.user_name, b.resource_description description, f.frequency_name frequency, 
+		F.ID frequencyid, e.nick_name, h.mode_name
+	    from
+	    res_reg a,
+	    res_table b,
+	    bm_department d,
+	    sys_user e,
+	    bm_order_frequency f,
+	    bm_collection_mode h
+		<where>
+		a.RES_ID=b.resource_id and b.department_id=d.department_id 
+		and a.operator=e.user_id and a.frequency=f.id
+		and h.id=a.collection_mode
+		and a.id=#{id}
+		</where>
+	</select>
+	
+	<select id="regDetail" resultType="auditDetail" parameterType="String">
+		select a.id, a.res_id, d.department_name, e.user_name, b.resource_description description, f.frequency_name frequency,
+	       g.status_name status, a.reason, to_char(a.last_update_time,'yyyy-mm-dd hh24:mi:ss') last_update_time, e.nick_name, h.mode_name
+	    from
+	    res_reg a,
+	    res_table b,
+	    bm_department d,
+	    sys_user e,
+	    bm_order_frequency f,
+	    bm_reg_status g,
+	    bm_collection_mode h
+	    where
+	    a.RES_ID=b.resource_id and b.department_id=d.department_id 
+	    and a.operator=e.user_id and a.frequency=f.id
+	    and a.reg_status=g.id
+	    and h.id=a.collection_mode
+	    and a.id=#{id}
+	</select>
+	
+	<!-- 获取tag -->
+	<select id="getTagList" parameterType="String" resultType="String">
+		select b.tag
+		from 
+		res_reg a,
+		res_tag b
+		where a.res_id=b.res_id and a.id=#{id}
+	</select>
+	
+	<update id="auditCommit" parameterType="map">
+		update res_reg a set a.reg_status=#{status},a.reason=#{reason} where a.id=#{id}
+	</update>
+	
+	<!-- AJAX删除tag -->
+	<delete id="deleteTag" parameterType="map">
+		delete from res_tag where res_id=#{res_id} and TAG=#{tag}
+	</delete>
+	
+	<!-- AJAX提交tag -->
+	<insert id="addTag" parameterType="map">
+		insert into res_tag (res_id, tag, last_update_time) values (#{res_id}, #{tag}, systimestamp)
+	</insert>
+  
+</mapper>

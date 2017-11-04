@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cssnb.baseframework.quickstart.dao.sjgx.ResSummaryMapper">
+	<resultMap id="mMap"
+		type="com.cssnb.baseframework.quickstart.entity.sjgx.ResSummary">
+		<result column="ID" jdbcType="DECIMAL" property="id" />
+		<result column="RESOURCE_ID" jdbcType="DECIMAL" property="resourceId" />
+		<result column="RESOURCE_NAME" jdbcType="VARCHAR" property="resourceName" />
+		<result column="RESOURCE_NAME_CN" jdbcType="VARCHAR" property="resourceNameCn" />
+		<result column="RESOURCE_DESCRIPTION" jdbcType="VARCHAR"
+			property="resourceDescription" />
+		<result column="DEPARTMENT_ID" jdbcType="DECIMAL" property="departmentId" />
+		<result column="DEPARTMENT_NAME" jdbcType="VARCHAR" property="departmentName" />
+	</resultMap>
+
+	<select id="getAllData" resultMap="mMap">
+		SELECT ID, RESOURCE_ID, RESOURCE_NAME, RESOURCE_NAME_CN,
+		RESOURCE_DESCRIPTION, A.DEPARTMENT_ID, DEPARTMENT_NAME
+		FROM RES_TABLE A,BM_DEPARTMENT B 
+		<where>
+		    and A.DEPARTMENT_ID=B.DEPARTMENT_ID AND A.STATE=1
+		</where>
+	</select>
+
+</mapper>

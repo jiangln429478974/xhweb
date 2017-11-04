@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cssnb.message.dao.TzMessageMapper" >
+
+	<select id="getTzMessageList" resultType="map" >
+	 select a.ID,  a.MBNR, to_char(a.FSSJ,'yyyy-mm-dd hh24:mi:ss')FSSJ,b.XM JSR ,c.BMMC BMMC from  XXTZXXB a join XT_YHB b  on 
+	 a.JSRID = b.ID  join XT_BMB c  on b.BMID = c.ID
+	 order  by  FSSJ desc
+	</select>
+	
+	<select id="getTzMessageListByCondition" parameterType="map" resultType="map" >
+	 select a.ID,  a.MBNR, to_char(a.FSSJ,'yyyy-mm-dd hh24:mi:ss')FSSJ,b.XM JSR ,c.BMMC BMMC from  XXTZXXB a join XT_YHB b  on 
+	 a.JSRID = b.ID  join XT_BMB c  on b.BMID = c.ID
+	   where  b.BMID=#{BMID} and   to_char(a.FSSJ,'yyyy-mm-dd hh24:mi:ss') between  #{start}  and #{end}
+	 order  by  FSSJ desc
+	</select>
+	
+	<select id="getOneTzMessage"  parameterType="string" resultType="map">
+	 	select  a.ID,  a.XXLX,a.XXBT, a.XXBT,a.JSSJHM, a.ZT,to_char(a.FSSJ,'yyyy-mm-dd hh24:mi:ss')FSSJ, a.MBNR,
+		b.XM JSR, m.XM FSR,
+		c.BMMC JSBMMC,
+		n.BMMC FSBMMC
+		from  XXTZXXB a
+		left  join  XT_YHB b on b.ID = a.JSRID join  XT_BMB c on b.BMID = c.ID
+		left  join  XT_YHB m on m.YHM = a.FSR join  XT_BMB n on m.BMID = n.ID
+		where  a.ID = #{ID}
+	</select>
+	
+	<insert id="insertTzMesage" parameterType="java.util.HashMap" >
+	insert  into  XXTZXXB (ID,ZT,FSSJ,FSR,JSRID,RKRQ,MBNR,XXBT,JSSJHM,XXLX) 
+		values (#{ID},#{ZT},#{FSSJ},#{FSR},#{JSRID},#{RKRQ},#{MBNR},#{XXBT},#{JSSJHM},#{XXLX})
+	</insert>
+	
+	<delete id="deleteTzMessage" parameterType="java.util.HashMap" >
+		delete from XXTZXXB where ID=#{ID}
+	</delete>
+	
+	<update id="tzMessageUpdate"  parameterType="java.util.HashMap" >
+			update XXTZXXB SET ZT=#{ZT}  WHERE ID=#{ID}
+	</update>
+
+<select  id="addZnMessage"  parameterType="map">
+	insert  into  XXTZXXB (ID,ZT,FSSJ,FSR,JSRID,RKRQ,MBNR,XXBT,XXLX) 
+	values (#{ID},#{ZT},#{FSSJ},#{FSR},#{JSRID},#{RKRQ},#{MBNR},#{XXBT},#{XXLX})
+</select>
+
+<!-- 获取部门列表 -->
+<select  id="getBMList"  resultType="map">
+	select  ID , BMMC  from  XT_BMB
+</select>
+
+<!-- 获取部门联系人 -->
+<select  id="getBMLianxiren"   parameterType="java.util.HashMap" resultType="map">
+	select a.ID  ID, a.XM  XM, a.BMID  BMID , b.BMMC  BMMC, a.JSSJHM  JSSJHM from  XT_YHB a,XT_BMB  b  where  a.BMID = b.ID
+	and a.BMID in  <foreach item="item" index="index" collection="BMIDS" open="(" separator="," close=")">  #{item}   </foreach> 
+	and a.ID not in  <foreach item="item" index="index" collection="notInUserId" open="(" separator="," close=")">  #{item}   </foreach> 
+	order  by  b.BMMC  asc
+</select>
+
+<!-- getLianxiren -->
+<select  id="getLianxiren"   parameterType="java.util.HashMap" resultType="map">
+	select a.ID  ID, a.XM  XM, a.BMID  BMID , b.BMMC  BMMC, a.JSSJHM  JSSJHM from  XT_YHB a,XT_BMB  b  where  a.BMID = b.ID
+	and a.BMID in  <foreach item="item" index="index" collection="BMIDS" open="(" separator="," close=")">  #{item}   </foreach> 
+	and a.ID not in  <foreach item="item" index="index" collection="notInUserId" open="(" separator="," close=")">  #{item}   </foreach> 
+	order  by  b.BMMC  asc
+</select>
+
+<select  id="getUserByBMID"  parameterType="map"  resultType="map">
+	select  y.ID  ID,y.YHM YHM, y.XM XM, y.JSSJHM JSSJHM,y.BMID  BMID,b.BMMC BMMC  from XT_YHB y, XT_BMB b where  y.BMID =#{BMID}  and y.BMID = b.ID
+</select>
+
+
+
+<!-- 列出所有部门和联系人 -->
+<select  id="getUserAndBM">
+	select y.YHM, b.BMMC,b.ID  BMID  from XT_YHB y 
+	 right join XT_BMB b  on  y.BMID = b.ID and  b.id  not  in('0') order  by BMID ;
+</select>
+
+<!-- 根据用户名获得该用户的部门信息 -->
+<select  id="selectBMbyUsername"  parameterType="map"  resultType="map">
+	select  y.ID USERID,y.XM  XM,  b.ID  BMID, b.BMMC  BMMC   from  XT_YHB  y  join  XT_BMB b on  y.YHM=#{YHM} and  y.BMID = b.ID
+</select>
+
+<select id="getYHID" parameterType="String" resultType="String">
+	select b.id from xt_yhb a,xt_bmb b where a.bmid=b.id and yhm=#{YHM}
+</select>
+	
+</mapper>

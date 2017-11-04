@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cssnb.baseframework.quickstart.dao.admin.UserDao" >
+    <resultMap id="UserMap" type="User">
+        <id column="user_id" property="userId"/>
+        <result column="user_name" property="userName"/>
+        <result column="nick_name" property="nickName"/>
+        <result column="sex" property="sex"/>
+        <result column="phone" property="phone"/>
+        <result column="address" property="address"/>
+    </resultMap>
+
+    <delete id="deleteUser" parameterType="int">
+    	delete from sys_user where user_id = #{userId}
+    </delete>
+
+    <insert id="insertUser" parameterType="User">
+        insert into sys_user(user_id,user_name,nick_name,password,sex,phone,address)
+        values(s_sys_user_user_id.nextval,#{userName},#{nickName},#{password},#{sex},#{phone,jdbcType=VARCHAR},#{address,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="updateUser" parameterType="User">
+        update sys_user
+        <set>
+            <if test='nickName != null and nickName != ""'>
+                nick_name = #{nickName},
+            </if>
+            <if test='password != null and password != ""'>
+                password = #{password},
+            </if>
+            <if test='address != null and address != ""'>
+                address = #{address},
+            </if>
+            <if test='sex != null and sex != ""'>
+                sex = #{sex},
+            </if>
+            <if test='phone != null and phone != ""'>
+                phone = #{phone}
+            </if>
+        </set>
+        where user_id = #{userId}
+    </update>
+
+    <select id="getUserInfo" resultMap="UserMap">
+        select user_id,user_name,nick_name,sex,phone,address from sys_user
+        <where>
+            <if test='userId != null and userId != ""'>
+                user_id = #{userId}
+            </if>
+            <if test='userName != null and userName != ""'>
+                user_name = #{userName}
+            </if>
+        </where>
+    </select>
+
+    <select id="findUserList" resultType="map" >
+    	select a.*, b.COUNT ,b.EXCEPTION_COUNT from res_collection_task a ,  RES_COLLECTION_LOG_STATS b where a.ID=b.TASK_ID
+        <where>
+            <if test='resId != null and resId != "" '>
+                and resId like ''||#{resId}||''
+            </if>
+        </where>
+    </select>
+    
+    <delete id="deletedata" parameterType="string">
+    	delete from res_collection_task where ID = #{ID}
+    </delete>
+    
+    <select id="getTaskInfo" resultType="Task">
+    	select * from res_collection_task where ID = #{ID}
+    </select>
+    
+    <!-- <insert id="uploadExl" parameterType="map">
+    	insert into testtable(testname,testage,testsex,testphone,testcity,testdepartment)values(#{1},#{2},#{3},#{4},#{5},#{6});
+    </insert> -->
+    
+    <delete id="deleteInfo" parameterType="string">
+    	delete from res_collection_task where ID=#{id}
+    </delete>
+    
+    <insert id="insertTask" parameterType="Task">
+    	INSERT INTO res_collection_task (ID, RES_ID, COLLECTION_MODE, FREQUENCY, STATUS, LAST_UPDATE_TIME) VALUES (#{ID},#{RES_ID},#{COLLECTION_MODE},#{FREQUENCY},#{STATUS},SYSDATE)
+    </insert>
+    
+    <update id="updateTask" parameterType="Task">
+    	 update res_collection_task
+        <set>
+            <if test='RES_ID != null and RES_ID != ""'>
+                RES_ID = #{RES_ID},
+            </if>
+            <if test='COLLECTION_MODE != null and COLLECTION_MODE != ""'>
+                COLLECTION_MODE = #{COLLECTION_MODE},
+            </if>
+            <if test='FREQUENCY != null and FREQUENCY != ""'>
+                FREQUENCY = #{FREQUENCY},
+            </if>
+            <if test='STATUS != null and STATUS != ""'>
+                STATUS = #{STATUS},
+            </if>
+            	LAST_UPDATE_TIME = SYSDATE
+        </set>
+        where ID = #{ID}
+    </update>
+    
+    <!-- 测试入库insert -->
+    <insert id="uploadExl" parameterType="map" >
+    insert into TESTTABLE (TESTNAME, TESTAGE, 
+      TESTSEX, TESTPHONE, TESTCITY, 
+      TESTDEPARTMENT)
+    values (#{1,jdbcType=VARCHAR}, #{2,jdbcType=VARCHAR}, 
+      #{3,jdbcType=VARCHAR}, #{4,jdbcType=VARCHAR}, #{5,jdbcType=VARCHAR}, 
+      #{6,jdbcType=VARCHAR})
+  </insert>
+  
+ <!--  <insert id="inTest_nsrxx" parameterType="map" >
+    insert into TEST_NSRXX (WSPZXH, NSRDZDAH, NSRSBH, 
+      NSRMC, FDDBRMC, DHHM, 
+      SCJYDZ, DJZCLX_DM, NSRZT_DM, 
+      HY_DM, JDXZ_DM, HZDJRQ, 
+      LRRQ, XGRQ, STATUS, TYPE, 
+      RKRQ, MSG_STATUS, RECORD_STATUS, 
+      XFRKRQ, BDBZ, GS_NBXH, 
+      GS_ZCH, GS_ZZJGDM, GS_GXDW6
+      )
+    values (#{0,jdbcType=DECIMAL}, #{1,jdbcType=DECIMAL}, #{2,jdbcType=VARCHAR}, 
+      #{3,jdbcType=VARCHAR}, #{4,jdbcType=VARCHAR}, #{5,jdbcType=VARCHAR}, 
+      #{6,jdbcType=VARCHAR}, #{7,jdbcType=VARCHAR}, #{8,jdbcType=VARCHAR}, 
+      #{9,jdbcType=VARCHAR}, #{10,jdbcType=VARCHAR}, #{11,jdbcType=DATE}, 
+      #{12,jdbcType=DATE}, #{13,jdbcType=DATE}, #{14,jdbcType=VARCHAR}, #{15,jdbcType=VARCHAR}, 
+      #{16,jdbcType=DATE}, #{17,jdbcType=VARCHAR}, #{18,jdbcType=DECIMAL}, 
+      #{19,jdbcType=DATE}, #{20,jdbcType=VARCHAR}, #{21,jdbcType=VARCHAR}, 
+      #{22,jdbcType=VARCHAR}, #{23,jdbcType=VARCHAR}, #{24,jdbcType=VARCHAR}
+      )
+  </insert>
+   -->
+  <insert id="inTest_nsrxx" parameterType="map" >
+    insert into TEST_NSRXX
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="WSPZXH != null" >
+        WSPZXH,
+      </if>
+      <if test="NSRDZDAH != null" >
+        NSRDZDAH,
+      </if>
+      <if test="NSRSBH != null" >
+        NSRSBH,
+      </if>
+      <if test="NSRMC != null" >
+        NSRMC,
+      </if>
+      <if test="FDDBRMC != null" >
+        FDDBRMC,
+      </if>
+      <if test="DHHM != null" >
+        DHHM,
+      </if>
+      <if test="SCJYDZ != null" >
+        SCJYDZ,
+      </if>
+      <if test="DJZCLX_DM != null" >
+        DJZCLX_DM,
+      </if>
+      <if test="NSRZT_DM != null" >
+        NSRZT_DM,
+      </if>
+      <if test="HY_DM != null" >
+        HY_DM,
+      </if>
+      <if test="JDXZ_DM != null" >
+        JDXZ_DM,
+      </if>
+      <if test="HZDJRQ != null" >
+        HZDJRQ,
+      </if>
+      <if test="LRRQ != null" >
+        LRRQ,
+      </if>
+      <if test="XGRQ != null" >
+        XGRQ,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="TYPE != null" >
+        TYPE,
+      </if>
+      <if test="RKRQ != null" >
+        RKRQ,
+      </if>
+      <if test="MSG_STATUS != null" >
+        MSG_STATUS,
+      </if>
+      <if test="RECORD_STATUS != null" >
+        RECORD_STATUS,
+      </if>
+      <if test="XFRKRQ != null" >
+        XFRKRQ,
+      </if>
+      <if test="BDBZ != null" >
+        BDBZ,
+      </if>
+      <if test="GS_NBXH != null" >
+        GS_NBXH,
+      </if>
+      <if test="GS_ZCH != null" >
+        GS_ZCH,
+      </if>
+      <if test="GS_ZZJGDM != null" >
+        GS_ZZJGDM,
+      </if>
+      <if test="GS_GXDW6 != null" >
+        GS_GXDW6,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="WSPZXH != null">
+        #{WSPZXH,jdbcType=DECIMAL},
+      </if>
+      <if test="NSRDZDAH != null">
+        #{NSRDZDAH,jdbcType=DECIMAL},
+      </if>
+      <if test="NSRSBH != null">
+        #{NSRSBH,jdbcType=VARCHAR},
+      </if>
+      <if test="NSRMC != null">
+        #{NSRMC,jdbcType=VARCHAR},
+      </if>
+      <if test="FDDBRMC != null">
+        #{FDDBRMC,jdbcType=VARCHAR},
+      </if>
+      <if test="DHHM != null">
+        #{DHHM,jdbcType=VARCHAR},
+      </if>
+      <if test="SCJYDZ != null">
+        #{SCJYDZ,jdbcType=VARCHAR},
+      </if>
+      <if test="DJZCLX_DM != null">
+        #{DJZCLX_DM,jdbcType=VARCHAR},
+      </if>
+      <if test="NSRZT_DM != null">
+        #{NSRZT_DM,jdbcType=VARCHAR},
+      </if>
+      <if test="HY_DM != null">
+        #{HY_DM,jdbcType=VARCHAR},
+      </if>
+      <if test="JDXZ_DM != null">
+        #{JDXZ_DM,jdbcType=VARCHAR},
+      </if>
+      <if test="HZDJRQ != null">
+        #{HZDJRQ,jdbcType=DATE},
+      </if>
+      <if test="LRRQ != null">
+        #{LRRQ,jdbcType=DATE},
+      </if>
+      <if test="XGRQ != null">
+        #{XGRQ,jdbcType=DATE},
+      </if>
+      <if test="STATUS != null">
+        #{STATUS,jdbcType=VARCHAR},
+      </if>
+      <if test="TYPE != null">
+        #{TYPE,jdbcType=VARCHAR},
+      </if>
+      <if test="RKRQ != null">
+        #{RKRQ,jdbcType=DATE},
+      </if>
+      <if test="MSG_STATUS != null">
+        #{MSG_STATUS,jdbcType=VARCHAR},
+      </if>
+      <if test="RECORD_STATUS != null">
+        #{RECORD_STATUS,jdbcType=DECIMAL},
+      </if>
+      <if test="XFRKRQ != null">
+        #{XFRKRQ,jdbcType=DATE},
+      </if>
+      <if test="BDBZ != null">
+        #{BDBZ,jdbcType=VARCHAR},
+      </if>
+      <if test="GS_NBXH != null">
+        #{GS_NBXH,jdbcType=VARCHAR},
+      </if>
+      <if test="GS_ZCH != null">
+        #{GS_ZCH,jdbcType=VARCHAR},
+      </if>
+      <if test="GS_ZZJGDM != null">
+        #{GS_ZZJGDM,jdbcType=VARCHAR},
+      </if>
+      <if test="GS_GXDW6 != null">
+        #{GS_GXDW6,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <select id="selTest_nerxx" resultType="map">
+    select * from  user_tab_cols t where TABLE_NAME='TEST_NSRXX' and DATA_TYPE='DATE'
+  </select>
+
+</mapper>

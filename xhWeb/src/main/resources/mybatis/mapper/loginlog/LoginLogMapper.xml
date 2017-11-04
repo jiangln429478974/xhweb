@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cssnb.loginlog.dao.LoginLogDao" >
+     <!-- 将捕获的操作存入数据库 -->
+     <insert id="insertLoginLog" parameterType="java.util.Map">
+	insert into XT_LOGINLOG(
+	UUID,
+	USERNAME,
+	LOGDATE,
+	CLASSNAME,
+	METHODNAME,
+	IP,
+	URL,
+	CS
+	)
+	values(
+	#{UUID,jdbcType=VARCHAR},
+	#{USERNAME,jdbcType=VARCHAR},
+	#{LOGDATE,jdbcType=TIMESTAMP},
+	#{CLASSNAME,jdbcType=VARCHAR},
+	#{METHODNAME,jdbcType=VARCHAR},
+	#{IP,jdbcType=VARCHAR},
+	#{URL,jdbcType=VARCHAR},
+	#{CS,jdbcType=VARCHAR}
+	)
+     </insert>
+</mapper>

@@ -1,0 +1,31 @@
+# database settings
+
+#mysql setting
+
+#jdbc.driver=com.mysql.jdbc.Driver
+#jdbc.url=jdbc:mysql://10.9.1.188:3306/cf_75c6e90c_69ee_48bb_b6c6_a6a40d1889da?autoReconnect=true
+#
+#jdbc.username=2RQOcxyM32Jifz5L
+#jdbc.password=igsQTfyu72LOTdnN
+
+#oracle
+
+
+jdbc.driver=oracle.jdbc.OracleDriver
+jdbc.url=jdbc:oracle:thin:@//10.19.13.246:1521/RACDB
+jdbc.username=c##nbggxy
+jdbc.password=nbggxy654321
+#
+
+
+#jdbc.driver=oracle.jdbc.driver.OracleDriver
+#jdbc.url=jdbc:oracle:thin:@//10.19.13.241:1521/GGXY
+#jdbc.username=c##nbggxy
+#jdbc.password=nbggxy654321
+
+
+jdbc.initial.size=10
+jdbc.min.idle=10
+jdbc.max.active=50
+
+nbggxynw-api=http://10.19.13.242:8080/nbggxy-api

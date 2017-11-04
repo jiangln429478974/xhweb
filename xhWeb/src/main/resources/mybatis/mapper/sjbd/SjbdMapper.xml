@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cssnb.sjbd.dao.SjbdMapper">
+
+<select id="getBmc" resultType="map"  parameterType="map">
+SELECT TABLE_NAME,TABLE_TYPE,COMMENTS FROM USER_TAB_COMMENTS WHERE table_name = #{TABLE_NAME}
+</select>
+
+<select id="getZd" resultType="map"  parameterType="map">
+
+SELECT A.TABLE_NAME,A.COLUMN_NAME,A.DATA_TYPE,B.COMMENTS,A.DATA_LENGTH
+FROM USER_TAB_COLUMNS A,user_col_comments B
+WHERE A.TABLE_NAME=B.TABLE_NAME AND A.COLUMN_NAME =B.COLUMN_NAME 
+AND B.COMMENTS IS NOT NULL
+AND A.TABLE_NAME=  #{TABLE_NAME} 
+order by a.COLUMN_ID
+</select>
+
+<select id="getPkey" resultType="map"  parameterType="map">
+select a.constraint_name,  a.column_name 
+ from user_cons_columns a, user_constraints b 
+ where a.constraint_name = b.constraint_name 
+ and b.constraint_type = 'P' 
+and a.table_name = #{TABLE_NAME}
+
+</select>
+
+
+<select id="getDemo" resultType="map"  parameterType="map">
+SELECT * FROM XT_CXZT WHERE ZTBM=#{ZTBM}
+</select>
+
+<select id="getCom" resultType="map"  parameterType="map">
+${SELECTSQL}
+</select>
+
+<select id="getTypeOfColname" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+	SELECT COLUMN_NAME colname,DATA_TYPE coltype FROM USER_TAB_COLUMNS
+	WHERE TABLE_NAME=#{BMC}
+	order by COLUMN_ID
+</select>
+
+<select id="getList" resultType="java.util.HashMap"  parameterType="map"  >
+${SELECTSQL}
+</select>
+	
+<select id="getBMID" resultType="String" parameterType="String">
+	select b.ID from xt_yhb y,xt_bmb b where y.BMID=b.id and y.yhm=#{YHM}
+</select>
+
+<update id="updateBZ" parameterType="String">
+	${ONESQL}
+</update>
+
+</mapper>

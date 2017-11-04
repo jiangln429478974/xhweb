@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cssnb.cxjk.dao.CxjkMapper">
+
+
+	<insert id="insertLog" parameterType="java.util.HashMap">
+		INSERT INTO XT_CXJK_LOG (UUID, CASFZH, CXSFZH, RKRQ,CLZT)
+		VALUES ( #{UUID,jdbcType=VARCHAR}, #{sfzh,jdbcType=VARCHAR},
+		#{IDCardNo,jdbcType=VARCHAR},SYSDATE,0)
+	</insert>
+
+	<select id="getYhidBySfzh" resultType="java.util.HashMap"
+		parameterType="map">
+	SELECT * FROM XT_YHB WHERE CABZF=#{IDCardNo}
+	</select>
+
+</mapper>

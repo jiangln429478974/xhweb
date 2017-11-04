@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cssnb.monitor.dao.Test">
+     <!-- 将捕获的操作存入数据库 -->
+     <insert id="insert" parameterType="java.util.Map">
+		insert into CS_LOG(SX,NJ,SEX)
+		values(#{SX},#{NJ},#{SEX})
+     </insert>
+</mapper>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cssnb.baseframework.quickstart.dao.admin.ResourceDao" >
+    <resultMap id="ResourceMap" type="Resource">
+        <id column="resource_id" property="resourceId"/>
+        <result column="url" property="url"/>
+        <result column="premission" property="premission"/>
+    </resultMap>
+
+    <select id="getAllResource" resultMap="ResourceMap">
+        select resource_id,url,premission from sys_resource where is_enable = 'Y' order by resource_id
+    </select>
+
+    <delete id="deleteUser" parameterType="int">
+    	delete from sys_user where user_id = #{userId}
+    </delete>
+
+    <insert id="insertUser" parameterType="User">
+        insert into sys_user(user_id,user_name,nick_name,password,sex,phone,address)
+        values(s_sys_user_user_id.nextval,#{userName},#{nickName},#{password},#{sex},#{phone,jdbcType=VARCHAR},#{address,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="updateUser" parameterType="User">
+        update sys_user
+        <set>
+            <if test='nickName != null and nickName != ""'>
+                nick_name = #{nickName},
+            </if>
+            <if test='password != null and password != ""'>
+                password = #{password},
+            </if>
+            <if test='address != null and address != ""'>
+                address = #{address},
+            </if>
+            <if test='sex != null and sex != ""'>
+                sex = #{sex},
+            </if>
+            <if test='phone != null and phone != ""'>
+                phone = #{phone}
+            </if>
+        </set>
+        where user_id = #{userId}
+    </update>
+
+    <select id="getUserInfo" >
+        select user_id,user_name,nick_name,sex,phone,address from sys_user
+        <where>
+            <if test='userId != null and userId != ""'>
+                user_id = #{userId}
+            </if>
+            <if test='userName != null and userName != ""'>
+                user_name = #{userName}
+            </if>
+        </where>
+    </select>
+
+    <select id="findUserList" resultType="map" >
+    	select * from sys_user
+        <where>
+            <if test='nickName != null and nickName != "" '>
+                and nickName like ''||#{nickName}||''
+            </if>
+        </where>
+    </select>
+
+</mapper>

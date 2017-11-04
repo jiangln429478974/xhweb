@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:util="http://www.springframework.org/schema/util"
+ 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd"
+default-lazy-init="true">
+
+<description>quartz</description>
+
+    <bean id="ToSendMSG" class="com.cssnb.xxts.controller.ToSendMSG"></bean>
+    <bean id="yycl" class="com.cssnb.yycl.controller.YyclController"></bean>
+<!-- part1  -->
+    <!--联合惩戒文件异常发送短信以及站内消息  -->
+    <bean id="ToLHCJMSG" class="com.cssnb.lhcj.controller.LhcjController"></bean>
+    <!--周报  -->
+    <bean id="ToGetZB" class="com.cssnb.pttj.controller.MzzbController"></bean>
+    <!-- 月报 -->
+    <bean id="ToGetYB" class="com.cssnb.pttj.controller.MzzbController"></bean>
+    <!-- 季报  -->
+    <bean id="ToGetJB" class="com.cssnb.pttj.controller.MzzbController"></bean>
+    <!-- 年报 -->
+    <bean id="ToGetNB" class="com.cssnb.pttj.controller.MzzbController"></bean>
+    <!-- 信用信息归集情况报表 -->
+    <bean id="ToGetXYGJ" class="com.cssnb.pttj.controller.MzzbController"></bean>
+    <!-- 信用信息清洗比对情况报表 -->
+    <bean id="ToGetXYGJ2" class="com.cssnb.pttj.controller.MzzbController"></bean>
+    <!-- 自然人公共信用信息归集情况 -->
+    <bean id="ToGetSJGJ" class="com.cssnb.pttj.controller.MzzbController"></bean>
+     <!-- 自然人公共信用信息归集情况0614 -->
+    <bean id="ToGetSJGJ0614" class="com.cssnb.pttj.controller.MzzbController"></bean>
+    <!-- 总体情况 -->
+    <bean id="ToGetZTQK" class="com.cssnb.pttj.controller.MzzbController"></bean>
+    <!-- 更新文件报送接口JXZT -->
+    <bean id="FtpController" class="com.cssnb.ftp.controller.FtpController"></bean>
+<!--     撤销联合惩戒发布 -->
+<!--     <bean id="LhcjController" class="com.cssnb.lhcj.controller.LhcjController"></bean> -->
+<!--     解除联合惩戒措施 -->
+    <bean id="LhcjController" class="com.cssnb.lhcj.controller.LhcjController"></bean>
+<!--     定时更新联合激励发布状态 -->
+    <bean id="LhjlController" class="com.cssnb.lhcj.controller.LhjlController"></bean>
+    
+<bean id="gsDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+  	 <property name="targetObject"><ref bean="ToSendMSG" /></property>
+  	 <property name="targetMethod" value="toSend" />
+  	 <property name="concurrent" value="false" ></property>
+</bean>
+<bean id="yyclDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+  	 <property name="targetObject"><ref bean="yycl" /></property>
+  	 <property name="targetMethod" value="dstx" />
+  	 <property name="concurrent" value="false" ></property>
+</bean>
+<!-- part2  -->
+<!--联合惩戒文件异常发送短信以及站内消息   -->
+<bean id="lhcjmsgDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+  	 <property name="targetObject"><ref bean="ToLHCJMSG" /></property>
+  	 <property name="targetMethod" value="ToLhcjMsg" />
+  	 <property name="concurrent" value="false" ></property>
+</bean>
+<!--周报  -->
+<bean id="bbDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+  	 <property name="targetObject"><ref bean="ToGetZB" /></property>
+  	 <property name="targetMethod" value="Zb" />
+  	 <property name="concurrent" value="false" ></property>
+</bean>
+<!-- 月报  -->
+<bean id="ybDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+     <property name="targetObject"><ref bean="ToGetYB"/></property>
+     <property name="targetMethod" value="Yb"/>
+     <property name="concurrent" value="false"></property>
+</bean>
+<!-- 季报  -->
+<bean id="jbDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+     <property name="targetObject"><ref bean="ToGetJB"/></property>
+     <property name="targetMethod" value="Jb"/>
+     <property name="concurrent" value="false"></property>
+</bean>
+<!-- 年报  -->
+<bean id="nbDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+     <property name="targetObject"><ref bean="ToGetNB"/></property>
+     <property name="targetMethod" value="Nb"/>
+     <property name="concurrent" value="false"></property>
+</bean>
+<!-- 信用信息归集情况报表 -->
+<bean id="xygjDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+     <property name="targetObject"><ref bean="ToGetXYGJ"/></property>
+     <property name="targetMethod" value="XYGJ"/>
+     <property name="concurrent" value="false"></property>
+</bean>
+<!-- 信用信息清洗比对情况报表  -->
+<bean id="xygjDetail2" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+     <property name="targetObject"><ref bean="ToGetXYGJ2"/></property>
+     <property name="targetMethod" value="XYGJ2"/>
+     <property name="concurrent" value="false"></property>
+</bean>
+<!-- 自然人公共信用信息归集情况表  -->
+<bean id="sjgjDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+     <property name="targetObject"><ref bean="ToGetSJGJ"/></property>
+     <property name="targetMethod" value="SJGJ"/>
+     <property name="concurrent" value="false"></property>
+</bean>
+<!-- 自然人公共信用信息归集情况表0614  -->
+<bean id="sjgjDetail0614" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+     <property name="targetObject"><ref bean="ToGetSJGJ0614"/></property>
+     <property name="targetMethod" value="SJGJ0614"/>
+     <property name="concurrent" value="false"></property>
+</bean>
+
+<!-- 总体情况  -->
+<bean id="ztqkDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+     <property name="targetObject"><ref bean="ToGetZTQK"/></property>
+     <property name="targetMethod" value="Ztqk"/>
+     <property name="concurrent" value="false"></property>
+</bean>
+<!-- 更新文件报送接口JXZT -->
+<bean id="jxztDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+     <property name="targetObject"><ref bean="FtpController"/></property>
+     <property name="targetMethod" value="getJXZT"/>
+     <property name="concurrent" value="false"></property>
+</bean>
+<!--     撤销联合惩戒发布 -->
+<!-- <bean id="lhcjDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"> -->
+<!--      <property name="targetObject"><ref bean="LhcjController"/></property> -->
+<!--      <property name="targetMethod" value="gqzdcx"/> -->
+<!--      <property name="concurrent" value="false"></property> -->
+<!-- </bean> -->
+<!--     解除联合惩戒措施 -->
+<bean id="lhcjDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+     <property name="targetObject"><ref bean="LhcjController"/></property>
+     <property name="targetMethod" value="gqcxqxcs"/>
+     <property name="concurrent" value="false"></property>
+</bean>
+<bean id="lhjlDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+     <property name="targetObject"><ref bean="LhjlController"/></property>
+     <property name="targetMethod" value="DSupdateFBZT"/>
+     <property name="concurrent" value="false"></property>
+</bean>
+
+<bean id="fgsJob"
+	class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+	<!-- Seconds Minutes Hours Day-of-Month Month Day-of-Week -->
+	<property name="cronExpression">
+		<value>0 1/1 9-17 ? * MON-FRI </value>
+	</property>
+	<property name="jobDetail">
+		<ref bean="gsDetail" />
+	</property>
+</bean>
+<bean id="yyclJob"
+class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+	<!-- Seconds Minutes Hours Day-of-Month Month Day-of-Week -->
+	<property name="cronExpression">
+	<value>0 30 21 ? * MON-FRI</value>
+	</property>
+	<property name="jobDetail">
+		<ref bean="yyclDetail" />
+</property>
+</bean>
+<!-- part3 -->
+<bean id="lhcjJob" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+	<property name="cronExpression">
+	<!-- 每隔五分钟 -->
+		   <value>0 0/5 * * * ?</value>  
+	</property>
+	<property name="jobDetail">
+		<ref bean="lhcjmsgDetail" />
+	</property>
+</bean>
+<!-- 周报  -->
+<bean id="bbJob" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+	<!-- Seconds Minutes Hours Day-of-Month Month Day-of-Week -->
+	<property name="cronExpression">
+<!-- 	每周一早上1点 -->
+		   <value>0 0 1 ? * MON</value>     
+<!--  测试每分钟  -->
+<!-- 		   <value>0 0/1 * * * ?</value>   -->
+		    
+	</property>
+	<property name="jobDetail">
+		<ref bean="bbDetail" />
+	</property>
+</bean>
+<!-- 月报  -->
+<bean id="ybJob" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    <property name="cronExpression">
+<!--     每月1号早上1点15分  -->
+           <value>0 15 1 1 * ?</value>   
+<!-- 测试每分钟  -->
+<!--       <value>0 0/1 * * * ?</value>        -->
+    </property>
+    <property name="jobDetail">
+		<ref bean="ybDetail" />
+	</property>
+</bean>
+<!-- 季报  -->
+<bean id="jbJob" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    <property name="cronExpression">
+    <!--1、4、7、10月每个月第一天凌晨1点统计  -->
+        <value>0 0 1 1 1,4,7,10 ? *</value>  
+         <!--测试每分钟  -->
+<!--          <value>0 0/1 * * * ?</value>        -->
+    </property>
+    <property name="jobDetail">
+		<ref bean="jbDetail" />
+	</property>
+</bean>
+<!-- 年报  -->
+<bean id="nbJob" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    <property name="cronExpression">
+     <!-- 每年1月1号1点执行  -->
+         <value>0 0 1 1 1 ? *</value>    
+         <!--测试每分钟  -->
+<!--       <value>0 0/1 * * * ?</value>   -->
+    </property>
+    <property name="jobDetail">
+		<ref bean="nbDetail" />
+	</property>
+</bean>
+<!-- 信用信息归集情况报表 -->
+<bean id="xygjJob" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    <property name="cronExpression">
+        <value>0 0 1 ? * MON-FRI</value>   <!-- 周一至周五每天早上1点生成  -->
+         <!--  <value>0 0/1 * * * ?</value>  -->  <!--测试每分钟  -->
+    </property>
+    <property name="jobDetail">
+		<ref bean="xygjDetail" />
+	</property>
+</bean>
+<!-- 信用信息清洗比对情况 -->
+<bean id="xygjJob2" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    <property name="cronExpression">
+        <value>0 0 1 ? * MON-FRI</value>      <!-- 周一至周五每天早上1点生成  -->
+      <!--     <value>0 0/1 * * * ?</value>   -->  <!--测试每分钟  -->
+    </property>
+    <property name="jobDetail">
+		<ref bean="xygjDetail2" />
+	</property>
+</bean>
+<!-- 自然人公共信用信息归集情况 -->
+<bean id="sjgjJob" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    <property name="cronExpression">
+         <value>0 0 1 ? * MON-FRI</value>     <!-- 周一至周五每天早上1点生成  -->
+       <!--  <value>0 0/1 * * * ?</value>   --> <!--测试每分钟  -->
+    </property>
+    <property name="jobDetail">
+		<ref bean="sjgjDetail" />
+	</property>
+</bean>
+<!-- 更新文件报送接口JXZT -->
+<bean id="jxztJob" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    <property name="cronExpression">
+         <value>0 0/3 * * * ? </value>     <!-- 周一至周五每天早上1点生成  -->
+<!--         <value>0 0/1 * * * ?</value>   测试每分钟  -->
+    </property>
+    <property name="jobDetail">
+		<ref bean="jxztDetail" />
+	</property>
+</bean>
+<!--     撤销联合惩戒发布 -->
+<!-- <bean id="lhcjeqJob" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"> -->
+<!--     <property name="cronExpression"> -->
+<!--          <value>0 0/5 * * * ? </value>     周一至周五每天早上1点生成  -->
+<!--     </property> -->
+<!--     <property name="jobDetail"> -->
+<!-- 		<ref bean="lhcjDetail" /> -->
+<!-- 	</property> -->
+<!-- </bean> -->
+<!--     解除联合惩戒措施 -->
+<bean id="lhcjeqJob" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    <property name="cronExpression">
+         <value>0 0 1 * * ?</value>	<!--  每天凌晨1点执行一次  -->
+    </property>
+    <property name="jobDetail">
+		<ref bean="lhcjDetail" />
+	</property>
+</bean>
+<bean id="lhjlFBZTJob" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    <property name="cronExpression">
+         <value>0 1/1 * * * ? </value>	<!--  每天凌晨1点执行一次  -->
+    </property>
+    <property name="jobDetail">
+		<ref bean="lhjlDetail" />
+	</property>
+</bean>
+<!-- 自然人公共信用信息归集情况0614 -->
+<bean id="sjgjJob0614" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    <property name="cronExpression">
+         <value>0 0 1 ? * MON-FRI</value>     <!-- 周一至周五每天早上1点生成  -->
+       <!--  <value>0 0/1 * * * ?</value>   --> <!--测试每分钟  -->
+    </property>
+    <property name="jobDetail">
+		<ref bean="sjgjDetail0614" />
+	</property>
+</bean>
+<!-- 总体情况 -->
+<bean id="Ztqk" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    <property name="cronExpression">
+           <value>0 15 1 1 * ?</value>   <!-- 每月1号早上1点15分 -->
+         <!--<value>0 0/1 * * * ?</value>  -->    <!--测试每分钟  -->
+    </property>
+    <property name="jobDetail">
+		<ref bean="ztqkDetail" />
+	</property>
+</bean>
+
+<bean id="sceduler"
+	class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+<property name="triggers">
+<list>
+<!--   <ref local="fgsJob" />	 -->
+    <!-- <ref local="yyclJob" /> -->	
+<!-- part4 -->
+<!-- 	<ref local="lhcjJob" />	 -->
+<!--    	<ref local="bbJob" />	 -->
+<!--    	<ref local="ybJob" />	 -->
+<!--    	<ref local="jbJob" />	 -->
+<!--    	<ref local="nbJob" />	 -->
+<!--    	信用信息归集情况报表 -->
+<!--    	<ref local="xygjJob" />	 -->
+<!--    	信用信息清洗比对情况 -->
+<!--    	<ref local="xygjJob2" />	 -->
+<!--    	自然人公共信用信息归集情况 -->
+<!--    	<ref local="sjgjJob" />	 -->
+   	<ref local="Ztqk" />
+   	 	<!-- 自然人公共信用信息归集情况0614 -->
+<!--    	  <ref local="sjgjJob0614" /> -->
+   	<!-- 更新文件报送接口JXZT -->
+<!--    	<ref local="jxztJob" />	 -->
+<!-- 	<ref local="lhcjeqJob" /> -->
+<!-- 	<ref local="lhjlFBZTJob" /> -->
+</list>
+</property>
+</bean> 
+</beans>

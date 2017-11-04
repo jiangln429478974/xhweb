@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cssnb.message.dao.ZnMessageMapper">
+
+<select  id="getBMList"  resultType="map">
+	select  ID , BMMC  from  XT_BMB
+</select>
+
+<select id="getZnMessageList" resultType="map">
+	 select a.ID, a.XXLX, a.MBNR, to_char(a.FSSJ,'yyyy-mm-dd hh24:mi:ss')FSSJ,b.XM FSR  from  XXTZXXB a 
+	 left join XT_YHB b  on  a.FSR = b.YHM
+	 order  by  FSSJ desc
+</select>
+
+<!-- 设置CKZT默认值为'0'-->
+ <update id="updateCKZTmrz"  parameterType="java.util.HashMap" >
+update XXTZXXB  set CKZT = '0' where CKZT is null
+</update>
+
+<select id="getZnMessageListFornotcenter" resultType="map">
+	 select a.ID, a.XXLX, a.MBNR,a.CKZT, to_char(a.FSSJ,'yyyy-mm-dd hh24:mi:ss')FSSJ,b.XM FSR  from  XXTZXXB a
+	 left   join XT_YHB b  on  a.FSR = b.YHM  
+	 left   join XT_YHB m  on  a.JSRID = m.ID
+	 where    m.YHM=#{YHM}
+	 order  by  FSSJ desc
+</select>
+
+<select  id="getOneZnMessage"  parameterType="map" resultType="map">
+	select  a.ID, a.XXLX,a.ZT,a.XXBT, to_char(a.FSSJ,'yyyy-mm-dd hh24:mi:ss')FSSJ, a.MBNR,
+	b.XM JSR, m.XM FSR,
+	c.BMMC JSBMMC,
+	n.BMMC FSBMMC
+	from  XXTZXXB a
+	left  join  XT_YHB b on b.ID = a.JSRID join  XT_BMB c on b.BMID = c.ID
+	left  join  XT_YHB m on m.YHM = a.FSR join  XT_BMB n on m.BMID = n.ID
+	where  a.ID = #{ID}
+</select>  
+
+<select  id="getZnMessageByCondition"  parameterType="map" resultType="map">
+	 select a.ID,a.XXLX,  a.MBNR, to_char(a.FSSJ,'yyyy-mm-dd hh24:mi:ss')FSSJ,b.XM JSR,m.XM FSR,
+	 c.ID  JSBMID,
+	 n.ID  FSBMID  ,
+	 a.CKZT
+	 from  XXTZXXB a 
+	 left  join XT_YHB b  on  a.JSRID = b.ID  join   XT_BMB c on b.BMID = c.ID
+	 left  join XT_YHB m on m.YHM = a.FSR join  XT_BMB n on m.BMID = n.ID
+	where  b.BMID=#{JSBMID} or m.BMID=#{FSBMID} 
+	and   to_char(a.FSSJ,'yyyy-mm-dd hh24:mi:ss')
+		between #{start}  and  #{end}  order  by  FSSJ  desc
+</select>
+
+<select  id="getZnMessageByConditionFornotcenterReceive"  parameterType="map" resultType="map">
+	 select a.ID, a.XXLX, a.MBNR, to_char(a.FSSJ,'yyyy-mm-dd hh24:mi:ss')FSSJ,b.XM JSR,m.XM FSR,
+	 c.ID  JSBMID,
+	 n.ID  FSBMID ,
+	 a.CKZT 
+	 from  XXTZXXB a 
+	 left  join XT_YHB b  on  a.JSRID = b.ID  join   XT_BMB c on b.BMID = c.ID
+	 left  join XT_YHB m  on  m.YHM = a.FSR join  XT_BMB n on m.BMID = n.ID
+	where  b.YHM = #{JSYHM} <!-- and  m.BMID=#{FSBMID}    -->
+	and a.MBNR like '%${XXBT}%'
+	and   to_char(a.FSSJ,'yyyy-mm-dd hh24:mi:ss')
+	between #{start}  and  #{end}  order  by CKZT,FSSJ  DESC
+</select>
+
+<select  id="getZnMessageByConditionFornotcenterSend"  parameterType="map" resultType="map">
+	 select a.ID, a.XXLX, a.MBNR, to_char(a.FSSJ,'yyyy-mm-dd hh24:mi:ss')FSSJ,b.XM JSR,m.XM FSR,
+	 c.ID  JSBMID,
+	 n.ID  FSBMID  ,
+	 a.CKZT
+	 from  XXTZXXB a 
+	 left  join XT_YHB b  on  a.JSRID = b.ID  join   XT_BMB c on b.BMID = c.ID
+	 left  join XT_YHB m  on  m.YHM = a.FSR join  XT_BMB n on m.BMID = n.ID
+	where  m.YHM = #{FSYHM} <!-- and  b.BMID=#{JSBMID}   --> 
+	and a.MBNR like '%${XXBT}%'
+	and   to_char(a.FSSJ,'yyyy-mm-dd hh24:mi:ss')
+	between #{start}  and  #{end}  order  by CKZT,FSSJ  DESC
+</select>
+
+
+<select  id="getZnMessageByConditionFornotcenterwithoutBM"  parameterType="map" resultType="map">
+	 select a.ID, a.XXLX, a.MBNR, to_char(a.FSSJ,'yyyy-mm-dd hh24:mi:ss')FSSJ,b.XM JSR,m.XM FSR,
+	 c.ID  JSBMID,
+	 n.ID  FSBMID  
+	 from  XXTZXXB a 
+	 left  join XT_YHB b  on  a.JSRID = b.ID  join   XT_BMB c on b.BMID = c.ID
+	 left  join XT_YHB m  on  m.YHM = a.FSR join  XT_BMB n on m.BMID = n.ID
+	where  (b.YHM = #{JSYHM} or m.YHM = #{FSYHM} ) and  a.MBNR like '%${XXBT}%'
+	and   to_char(a.FSSJ,'yyyy-mm-dd hh24:mi:ss') between #{start}  and  #{end}  order  by  FSSJ  desc
+</select>
+
+<select  id="deleteZnMessage"  parameterType="map"  resultType="map">
+	delete  from  XXTZXXB 
+	where  ID  in 
+	 <foreach item="item" index="index" collection="deleteIDS" open="(" separator="," close=")">  #{item}   </foreach> 
+</select>
+
+<!--  	
+  select a.id  ID,  a.xxbt  XXBT,  b.bmmc  BMMC ,
+  to_char(a.fssj,'yyyy-mm-dd hh24:mi:ss')FSSJ  from  XXTZXXB  a,XT_BMB  b where a.bmid=b.id  and  b.id=#{BMID};
+-->
+
+<!-- 更新惩戒指标项记录信息 -->
+ <update id="updataCkzt"  parameterType="java.util.HashMap" >
+update XXTZXXB SET CKZT=#{CKZT} WHERE ID=#{ID}
+</update>
+ 
+</mapper>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cssnb.zljk.dao.ZljkMapper" >
+
+<!-- 遍历所有增量监控数据 -->
+<select id="getzlcxList"  resultType="map">
+  <!-- SELECT gxmlmc,a.id, tname,sjk, total,to_char(gxsj,'yyyy-mm-dd') as gxsj, unid, today, a.rkrq, to_char(tjrq,'yyyy-mm-dd')as tjrq
+FROM c##sjjh.XT_TJ_SJQK a
+LEFT JOIN xt_gxmlb b
+ON  UPPER(a.tname) = b.gxmlywmc 
+WHERE  TJRQ=TRUNC(SYSDATE-1)
+ORDER BY TNAME ,SJK DESC -->
+
+<!-- 正在使用 -->
+<!--  SELECT gxmlmc,a.id, tname,sjk, total,to_char(gxsj,'yyyy-mm-dd') as gxsj, unid, today, a.rkrq, to_char(tjrq,'yyyy-mm-dd')as tjrq
+FROM c##sjjh.XT_TJ_SJQK a
+LEFT JOIN xt_gxmlb20170106jln b 
+ON  UPPER(a.tname) = b.gxmlywmc 
+WHERE  TJRQ=TRUNC(SYSDATE-1) 
+ORDER BY TNAME ,SJK DESC -->
+
+
+SELECT gxmlmc,a.id, UPPER(tname) as tname,sjk, total,to_char(gxsj,'yyyy-mm-dd') as gxsj, unid, today, a.rkrq, to_char(tjrq,'yyyy-mm-dd')as tjrq
+FROM c##sjjh.XT_TJ_SJQK a
+, xt_gxmlb b 
+where UPPER(a.tname) = b.gxmlywmc 
+and  TJRQ=TRUNC(SYSDATE-1) 
+and b.jhfs='Z'
+ORDER BY TNAME ,SJK DESC
+</select>
+<!-- 按时间查询对应的数据 -->
+<!-- <select id="getfidSjlist" resultType="Map" parameterType="Map">
+			 select id, tname,sjk, total,  to_char(gxsj,'yyyy-mm-dd') as gxsj, unid, today, rkrq, to_char(tjrq,'yyyy-mm-dd')as tjrq  from c##sjjh.xt_tj_sjqk 
+			 <where>
+			 trunc(rkrq)
+			 between 
+			 	 <if test="sjstart != null and sjstart != ''">
+				      trunc(to_date(#{sjstart},'yyyy-mm-dd hh24:mi:ss'))
+				    </if> 
+				    <if test="sjend != null and sjend != ''">
+				     AND   trunc(to_date(#{sjend},'yyyy-mm-dd hh24:mi:ss'))
+				    </if>
+			 </where>
+			 ORDER BY TNAME ,SJK DESC
+			</select> -->
+			
+			
+		<select id="getfidSjlist" resultType="Map" parameterType="Map">
+			 SELECT gxmlmc,a.id, tname,sjk, total,to_char(gxsj,'yyyy-mm-dd') as gxsj, unid, today, a.rkrq, to_char(tjrq,'yyyy-mm-dd')as tjrq
+			FROM c##sjjh.XT_TJ_SJQK a
+			LEFT JOIN xt_gxmlb b
+			ON  UPPER(a.tname) = b.gxmlywmc 
+			
+			<!--  <where>
+			 trunc(a.rkrq)
+			 between 
+			 	 <if test="sjstart != null and sjstart != ''">
+				      trunc(to_date(#{sjstart},'yyyy-mm-dd hh24:mi:ss'))
+				    </if> 
+				    <if test="sjend != null and sjend != ''">
+				     AND   trunc(to_date(#{sjend},'yyyy-mm-dd hh24:mi:ss'))
+				    </if>
+				    
+			 </where> -->
+			 
+			<!--  <where>
+			<if test="sjstart != null and sjstart != ''">
+			and trunc(a.tjrq)  &gt; trunc(to_date(#{sjstart},'yyyy-mm-dd hh24:mi:ss')) 
+			 </if> 
+			  <if test="sjend != null and sjend != ''">
+			 and  trunc(a.tjrq)    &lt;= trunc(to_date(#{sjend},'yyyy-mm-dd hh24:mi:ss'))
+			  </if> 
+			 </where> -->
+			 
+			  <where>
+			<if test="sjstart != null and sjstart != ''">
+			and trunc(a.tjrq)  &gt;=  to_date(#{sjstart},'yyyy-mm-dd') 
+			 </if> 
+			  <if test="sjend != null and sjend != ''">
+			 and  trunc(a.tjrq)    &lt;=  to_date(#{sjend},'yyyy-mm-dd')
+			  </if> 
+			 </where>
+			 
+			 
+			 
+			 ORDER BY TNAME ,SJK DESC
+			</select> 
+			
+			<!-- 筛选异常记录，陈启敦/2016.08.08 -->
+			<!-- <select id="getzlsxlist"  resultType="map">
+			  SELECT gxmlmc,a.id, tname,sjk, total,to_char(gxsj,'yyyy-mm-dd') as gxsj, unid, today, a.rkrq, to_char(tjrq,'yyyy-mm-dd')as tjrq
+			FROM c##sjjh.XT_TJ_SJQK a
+			LEFT JOIN xt_gxmlb b
+			ON  UPPER(a.tname) = b.gxmlywmc 
+			WHERE  TJRQ=TRUNC(SYSDATE-1)
+			ORDER BY TNAME ,SJK DESC
+			</select> -->
+			
+			<!-- 筛选异常记录，陈启敦/2016.08.08 -->
+			<!-- <select id="getzlsxlist"  resultType="map">
+			  select distinct unid,gxmlmc,TNAME,gxsj from 
+(select  unid,gxmlmc,SJK,TNAME,TOTAL,GXSJ,TODAY,a.RKRQ,TJRQ from c##sjjh.XT_TJ_SJQK a LEFT JOIN xt_gxmlb b on  UPPER(a.tname)=b.gxmlywmc  where  tjrq= to_date(sysdate-1))
+order by tname
+			</select> -->
+			
+			<select id="getzlsxlist"  resultType="map">
+			  select distinct tname,gxmlmc，UNID,bmmc from(select distinct tname,gxmlmc，UNID,bmid from (select  DISTINCT unid,gxmlmc,tname,bmid from 
+(select  unid,gxmlmc,tname,b.bmid from c##sjjh.XT_TJ_SJQK a LEFT JOIN xt_gxmlb b on  UPPER(a.tname)=b.gxmlywmc  where  tjrq= to_date(sysdate-1))  
+order by unid ) where tname in (select tname from (select  DISTINCT unid,gxmlmc,tname from 
+(select  unid,gxmlmc,tname,b.bmid from c##sjjh.XT_TJ_SJQK a LEFT JOIN xt_gxmlb b on  UPPER(a.tname)=b.gxmlywmc  where  tjrq= to_date(sysdate-1))  
+order by unid ) group by tname having count(tname) > 1)) c LEFT JOIN xt_bmb d on c.bmid=d.id order by gxmlmc
+			</select>
+			
+			
+			
+			<select id="getzlplList"  resultType="map">
+			  select sjk,to_char(gxsj,'yyyy-mm-dd') as gxsj,unid,tname,gxmlmc from  c##sjjh.XT_TJ_SJQK a LEFT JOIN xt_gxmlb b on  UPPER(a.tname)=b.gxmlywmc  where tjrq= to_date(sysdate-1) and sjk like '%中心前置%' order by tname desc
+			</select>
+			
+			
+			
+</mapper>
+
+
+
+

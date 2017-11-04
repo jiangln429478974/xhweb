@@ -1,0 +1,201 @@
+html {
+	margin: 0px; padding: 0px;
+}
+body {
+	margin: 0px; padding: 0px; 
+}
+div {
+	margin: 0px; padding: 0px;
+}
+h1 {
+	margin: 0px; padding: 0px;
+}
+h2 {
+	margin: 0px; padding: 0px;
+}
+h3 {
+	margin: 0px; padding: 0px;
+}
+h4 {
+	margin: 0px; padding: 0px;
+}
+h5 {
+	margin: 0px; padding: 0px;
+}
+h6 {
+	margin: 0px; padding: 0px;
+}
+ul {
+	margin: 0px; padding: 0px;
+}
+ol {
+	margin: 0px; padding: 0px;
+}
+dl {
+	margin: 0px; padding: 0px;
+}
+li {
+	margin: 0px; padding: 0px;
+}
+dt {
+	margin: 0px; padding: 0px;
+}
+dd {
+	margin: 0px; padding: 0px;
+}
+p {
+	margin: 0px; padding: 0px;
+}
+blockquote {
+	margin: 0px; padding: 0px;
+}
+pre {
+	margin: 0px; padding: 0px;
+}
+form {
+	margin: 0px; padding: 0px; position: relative;
+}
+fieldset {
+	margin: 0px; padding: 0px;
+}
+table {
+	margin: 0px; padding: 0px;
+}
+th {
+	margin: 0px; padding: 0px;
+}
+td {
+	margin: 0px; padding: 0px;
+}
+/* body { */
+/* 	text-align: center; color: black; background-color: rgb(238, 238, 238); */
+/* } */
+h1 {
+	margin: 0.5em;
+}
+fieldset {
+	margin: 0.5em auto; padding: 0.5em; text-align: left; display: inline-block;
+}
+table {
+	margin: 0px auto; border: 0px currentColor; border-image: none; text-align: left;
+}
+legend {
+	font-weight: bold;
+}
+textarea {
+	display: block;
+}
+/* .col1 { */
+/* 	width: 10em; */
+/* } */
+/* .col2 { */
+/* 	width: 18em; */
+/* } */
+/* .col3 { */
+/* 	width: 10em; */
+/* } */
+/* td > input[type='text'] { */
+/* 	width: 20em; */
+/* } */
+/* td > input[type='button'] { */
+/* 	width: 10em; */
+/* } */
+/* td > select { */
+/* 	width: 32em; */
+/* } */
+fieldset {
+	background-color: rgb(221, 221, 221);
+}
+hr {
+	background-color: rgb(221, 221, 221);
+}
+/* input[readonly] { */
+/* 	background-color: rgb(221, 221, 221); */
+/* } */
+/* textarea[readonly] { */
+/* 	background-color: rgb(221, 221, 221); */
+/* } */
+/* input[readonly] { */
+/* 	border-width: thin; */
+/* } */
+/* textarea[readonly] { */
+/* 	border-width: thin; */
+/* } */
+.calogin{
+	/* height: 20px; */
+	width: 600px;
+	height: auto;
+	border: 1px solid #000;
+	position: absolute;
+	top: 200px;
+	left: 50%;
+	margin-left: -150px;
+	background-color: white;
+ 	text-align:center;
+ 	
+
+ 	
+}
+.calogin2{
+	/* height: 20px; */
+	width: 400px;
+	height: auto;
+	border: 1px solid #000;
+	position: absolute;
+	top: 200px;
+	left: 50%;
+	margin-left: -150px;
+	background-color: white;
+ 	text-align:center;
+ 	
+
+ 	
+}
+.caption2 {
+  float: left;
+  display: inline-block;
+  font-size: 18px;
+  line-height: 18px;
+  padding: 10px 0;
+}
+.bgDiv{
+	/* height: 20px; */
+	width: 2800px;
+	height: 1000px; 
+}
+ .loginbgDiv{
+	/* height: 20px; */
+	width: 100%;
+	height: 110%; 
+}
+.font-table{
+	font-size: 14px;
+	border: 1px solid #ccc;
+	width:100%;
+	margin-top: 10px;
+}
+.font-table  th{
+	font-size: 14px;
+	border: 1px solid #ccc; 
+	text-align:center;
+	margin: 5px; 
+	padding: 5px;
+}
+.font-table tr  td{
+	font-size: 14px;
+	border: 1px solid #ccc; 
+	margin: 5px; 
+	padding: 5px;
+}
+.div_update{
+	font-size: 16px; 
+	text-align:center;
+	width:100%;
+}
+
+.nbsp{
+	margin-left:15px;
+}
+.base{
+	margin-bottom: -140px;
+} 

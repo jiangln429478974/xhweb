@@ -1,0 +1,299 @@
+package com.cssnb.util;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;  
+import org.springframework.web.bind.annotation.RequestMapping;  
+import org.springframework.web.context.ServletContextAware;  
+import org.springframework.web.context.request.WebRequest;
+
+import com.cssnb.baseframework.core.util.ParameterUtil;
+import com.cssnb.notice.service.NoticeService;
+  
+import javax.servlet.ServletContext;  
+import javax.servlet.ServletOutputStream;  
+import javax.servlet.http.HttpServletResponse;  
+import java.io.*;  
+import java.util.HashMap;
+import java.util.Map;
+  
+@Controller  
+@RequestMapping("/file")
+public class FileController implements ServletContextAware{  
+    //Spring这里是通过实现ServletContextAware接口来注入ServletContext对象  
+    private ServletContext servletContext;  
+    @Autowired
+    private NoticeService noticeService;
+  
+    @RequestMapping("/download")  
+    public void fileDownload(HttpServletResponse response){  
+        //获取网站部署路径(通过ServletContext对象)，用于确定下载文件位置，从而实现下载  
+        String path = servletContext.getRealPath("/");  //只使用tomcat
+//       String weblogicpath= this.getClass().getClassLoader().getResource("/").getPath();
+  
+        //1.设置文件ContentType类型，这样设置，会自动判断下载文件类型  
+        response.setContentType("multipart/form-data");  
+        //2.设置文件头：最后一个参数是设置下载文件名(假如我们叫a.pdf)  
+        response.setHeader("Content-Disposition", "attachment;fileName="+"ZJCA.rar");  
+        ServletOutputStream out;  
+        //通过文件路径获得File对象(假如此路径中有一个download.pdf文件)  
+        File file = new File("/usr/weblogic/Oracle/Middleware/Oracle_Home/user_projects/domains/base_domain/autodeploy/nbggxy/resources/client/ZJCA.rar");  
+        try {  
+            FileInputStream inputStream = new FileInputStream(file);  
+  
+            //3.通过response获取ServletOutputStream对象(out)  
+            out = response.getOutputStream();  
+  
+            int b = 0;  
+            byte[] buffer = new byte[512];  
+            while (b != -1){  
+                b = inputStream.read(buffer);  
+                //4.写到输出流(out)中  
+                if(b==-1){
+					break;
+				}else{
+					out.write(buffer, 0, b);
+				}
+            }  
+            inputStream.close();  
+            out.close();  
+            out.flush();  
+  
+        } catch (IOException e) {  
+            e.printStackTrace();  
+        }  
+    }  
+    
+    
+
+
+    @RequestMapping("/downloadfile")
+    public void downloadfile(HttpServletResponse response,WebRequest webrequest) throws Exception{  
+        //获取网站部署路径(通过ServletContext对象)，用于确定下载文件位置，从而实现下载  
+//        String path = servletContext.getRealPath("/");  //只使用tomcat
+//       String weblogicpath= this.getClass().getClassLoader().getResource("/").getPath();
+        
+    	 String path2=this.getClass().getClassLoader().getResource("").getPath();
+         /*String path=path2.substring(0,path2.indexOf("WEB-INF"))+"resources/model/信用平台运行周报";*/
+         String path=path2.substring(0,path2.indexOf("WEB-INF"))+"resources/client/";
+    	
+        Map<String, Object> webMap = ParameterUtil.getFilterMap(webrequest);
+        String name=webMap.get("filename")+"";
+        Object name2=webMap.get("filename2");
+        
+        
+//        String name=filename.substring(filename.lastIndexOf("/")+1,filename.length());
+  
+        //1.设置文件ContentType类型，这样设置，会自动判断下载文件类型  
+        response.setContentType("multipart/form-data");  
+        response.addHeader("Content-Type", "text/html; charset=utf-8");  
+        //2.设置文件头：最后一个参数是设置下载文件名(假如我们叫a.pdf)  
+        if(name2==null||name2.equals("null")||name2.equals("")){
+        	response.setHeader("Content-Disposition", "attachment;fileName="+name);  
+        }else{
+        	
+        	String nr=java.net.URLDecoder.decode(name2.toString(),"UTF-8");
+        	String downLoadName = new String(nr.getBytes("gbk"), "iso8859-1");  
+        	response.setHeader("Content-Disposition", "attachment;fileName="+downLoadName);  
+        }
+        ServletOutputStream out;  
+        //通过文件路径获得File对象(假如此路径中有一个download.pdf文件)  
+        //weblogic
+        File file = new File(path+name);  
+        try {  
+            FileInputStream inputStream = new FileInputStream(file);  
+  
+            //3.通过response获取ServletOutputStream对象(out)  
+            out = response.getOutputStream();  
+  
+            int b = 0;  
+            byte[] buffer = new byte[512];  
+            while (b != -1){  
+                b = inputStream.read(buffer);  
+                //4.写到输出流(out)中  
+                if(b==-1){
+					break;
+				}else{
+					out.write(buffer, 0, b);
+				}
+            }  
+            inputStream.close();  
+            out.close();  
+            out.flush();  
+  
+        } catch (IOException e) {  
+            e.printStackTrace();  
+        }  
+    }  
+    
+    @RequestMapping("/applydownloadfile")
+    public void applydownloadfile(HttpServletResponse response,WebRequest webrequest) throws Exception{  
+        //获取网站部署路径(通过ServletContext对象)，用于确定下载文件位置，从而实现下载  
+//        String path = servletContext.getRealPath("/");  //只使用tomcat
+//       String weblogicpath= this.getClass().getClassLoader().getResource("/").getPath();
+        
+    	 String path2=this.getClass().getClassLoader().getResource("").getPath();
+         /*String path=path2.substring(0,path2.indexOf("WEB-INF"))+"resources/model/信用平台运行周报";*/
+         String path=path2.substring(0,path2.indexOf("WEB-INF"))+"resources/client/";
+    	
+        Map<String, Object> webMap = ParameterUtil.getFilterMap(webrequest);
+        String name=webMap.get("filename")+"";
+        Object name2=webMap.get("filename2");
+        String yname="";
+        
+        
+//        String name=filename.substring(filename.lastIndexOf("/")+1,filename.length());
+  
+        //1.设置文件ContentType类型，这样设置，会自动判断下载文件类型  
+        response.setContentType("multipart/form-data");  
+        response.addHeader("Content-Type", "text/html; charset=utf-8");  
+        //2.设置文件头：最后一个参数是设置下载文件名(假如我们叫a.pdf)  
+        if(name2==null||name2.equals("null")||name2.equals("")){
+        	if(name.equals("YWSQB.docx")){
+        		yname="宁波市公共信用信息平台帐号业务申请表.docx";
+        	}
+        	if(name.equals("ZSSQB.doc")){
+        		yname="宁波市电子政务个人数字证书申请表.doc";
+        	}
+        	response.setHeader("Content-Disposition", "attachment;fileName="+java.net.URLEncoder.encode(yname, "UTF-8"));  
+        }else{
+        	
+        	String nr=java.net.URLDecoder.decode(name2.toString(),"UTF-8");
+        	String downLoadName = new String(nr.getBytes("gbk"), "iso8859-1");
+        	response.setHeader("Content-Disposition", "attachment;fileName="+downLoadName);  
+        }
+        ServletOutputStream out;  
+        //通过文件路径获得File对象(假如此路径中有一个download.pdf文件)  
+        //weblogic
+        File file = new File(path+name);  
+        try {  
+            FileInputStream inputStream = new FileInputStream(file);  
+  
+            //3.通过response获取ServletOutputStream对象(out)  
+            out = response.getOutputStream();  
+  
+            int b = 0;  
+            byte[] buffer = new byte[512];  
+            while (b != -1){  
+                b = inputStream.read(buffer);  
+                //4.写到输出流(out)中  
+                if(b==-1){
+					break;
+				}else{
+					out.write(buffer, 0, b);
+				}
+            }  
+            inputStream.close();  
+            out.close();  
+            out.flush();  
+  
+        } catch (IOException e) {  
+            e.printStackTrace();  
+        }  
+    }  
+    
+    
+
+    @RequestMapping("/download2")
+    public void fileDownload2(HttpServletResponse response,WebRequest webrequest){  
+        //获取网站部署路径(通过ServletContext对象)，用于确定下载文件位置，从而实现下载  
+//        String path = servletContext.getRealPath("/");  //只使用tomcat
+//       String weblogicpath= this.getClass().getClassLoader().getResource("/").getPath();
+        
+        Map<String, Object> webMap = ParameterUtil.getFilterMap(webrequest);
+        String filename=webMap.get("filename")+"";
+        
+        String name=filename.substring(filename.lastIndexOf("/")+1,filename.length());
+  
+        //1.设置文件ContentType类型，这样设置，会自动判断下载文件类型  
+        response.setContentType("multipart/form-data");  
+        //2.设置文件头：最后一个参数是设置下载文件名(假如我们叫a.pdf)  
+        response.setHeader("Content-Disposition", "attachment;fileName="+name);  
+        ServletOutputStream out;  
+        //通过文件路径获得File对象(假如此路径中有一个download.pdf文件)  
+        //weblogic
+        File file = new File("/usr/weblogic/Oracle/Middleware/Oracle_Home/user_projects/domains/base_domain/autodeploy/nbggxy/resources/"+filename);  
+        try {  
+            FileInputStream inputStream = new FileInputStream(file);  
+  
+            //3.通过response获取ServletOutputStream对象(out)  
+            out = response.getOutputStream();  
+  
+            int b = 0;  
+            byte[] buffer = new byte[512];  
+            while (b != -1){  
+                b = inputStream.read(buffer);  
+                //4.写到输出流(out)中  
+                if(b==-1){
+					break;
+				}else{
+					out.write(buffer, 0, b);
+				}
+            }  
+            inputStream.close();  
+            out.close();  
+            out.flush();  
+  
+        } catch (IOException e) {  
+            e.printStackTrace();  
+        }  
+    }  
+    @RequestMapping("/downloadTzggfj")  
+    public void downloadTzggfj(HttpServletResponse response,WebRequest request) throws UnsupportedEncodingException{  
+        //获取网站部署路径(通过ServletContext对象)，用于确定下载文件位置，从而实现下载  
+    	Map<String, Object> map = ParameterUtil.getFilterMap(request);
+    	
+    	
+    	  HashMap findtzggfj = this.noticeService.findTzggfjListbyid(map);
+    	  String fj_zw = findtzggfj.get("TZGGZW").toString();
+    	  String fj_fwq = findtzggfj.get("TZGGFJ").toString();
+    	  
+        String path = servletContext.getRealPath("/");  //只使用tomcat
+//       String weblogicpath= this.getClass().getClassLoader().getResource("/").getPath();
+  
+        //1.设置文件ContentType类型，这样设置，会自动判断下载文件类型  
+        response.setContentType("multipart/form-data");  
+        //2.设置文件头：最后一个参数是设置下载文件名(假如我们叫a.pdf)  
+//        response.setHeader("Content-Disposition", "attachment;fileName="+fj_zw); 
+        
+        response.setContentType("octets/stream");  
+		  response.addHeader("Content-Type", "text/html; charset=utf-8");  
+		  String downLoadName = new String(fj_zw.getBytes("gbk"), "iso8859-1");  
+		  response.addHeader("Content-Disposition", "attachment;filename="  
+		        + downLoadName); 
+        
+        
+        
+        ServletOutputStream out;  
+        //通过文件路径获得File对象(假如此路径中有一个download.pdf文件)  
+//        File file = new File(path+"/resources/upload/"+fj_fwq);  
+        File file = new File("/usr/weblogic/Oracle/Middleware/Oracle_Home/user_projects/domains/base_domain/autodeploy/nbggxy/resources/upload/"+fj_fwq);  
+        
+        try {  
+            FileInputStream inputStream = new FileInputStream(file);  
+  
+            //3.通过response获取ServletOutputStream对象(out)  
+            out = response.getOutputStream();  
+  
+            int b = 0;  
+            byte[] buffer = new byte[1024];  
+            while (b != -1){  
+                b = inputStream.read(buffer);  
+                if (b==-1){
+                	break;
+                }
+                //4.写到输出流(out)中  
+                out.write(buffer,0,b);  
+            }  
+            inputStream.close();  
+            out.close();  
+            out.flush();  
+  
+        } catch (IOException e) {  
+            e.printStackTrace();  
+        }  
+    }  
+    @Override  
+    public void setServletContext(ServletContext servletContext) {  
+        this.servletContext = servletContext;  
+    }  
+}  

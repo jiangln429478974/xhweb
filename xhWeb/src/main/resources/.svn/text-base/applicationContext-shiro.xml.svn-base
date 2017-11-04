@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:util="http://www.springframework.org/schema/util"
+ 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd"
+	default-lazy-init="true">
+
+	<description>Shiro安全配置</description>
+
+	<!-- Shiro的核心类 -->
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager" >
+		<property name="realm" ref="myRealm" />
+		<!-- 
+		<property name="cacheManager" ref="shiroCacheManager" />
+		 -->
+	</bean>
+
+    <bean id="chainDefinitionSectionMetaSource" class="com.cssnb.baseframework.quickstart.shiro.ChainDefinitionSectionMetaSource">
+        <property name="filterChainDefinitions">
+            <value>
+                /login = authc
+                /logout = logout
+                /index = authc
+                /loginPass=anon
+                /head = anon
+                /shenqing = anon
+                /nbzrLogin=anon
+                /nbzr = anon
+                /resources/** = anon
+                /file/** = anon
+                /pttj/** = anon
+                /cxjk/** = anon
+                /netsignForCxjk = anon
+                /** = authc
+                
+            </value>
+        </property>
+    </bean>
+   
+
+    <!-- shrio的filter，在这里可以配置，登陆相关的页面，及对那些URL进行权限拦截权限认证 -->
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<property name="securityManager" ref="securityManager" />
+		<property name="loginUrl" value="/login" /><!-- 登陆页面,即对所有需要authc登陆的请求时，如果未登陆都会被重定向到这里 -->
+		<property name="successUrl" value="/index" /><!-- 登陆成功时，跳转的页面 -->
+		<property name="unauthorizedUrl" value="/login?una" /><!-- 认证失败时跳到的页面 -->
+		<property name="filters">
+			<util:map>
+    			<entry key="authc"> <!-- 自己实现的formAuthcFilter，加入失败登陆次数 -->
+     				<bean class="com.cssnb.baseframework.quickstart.shiro.MyFormAuthentication" >
+     	 				<property name="maxLoginAttempts" value="3"/>
+     				</bean>
+    			</entry>
+   			</util:map>
+		</property>
+		<property name="filterChainDefinitionMap" ref="chainDefinitionSectionMetaSource"/>
+	</bean>
+
+	<!-- Define any javax.servlet.Filter beans you want anywhere in this application 
+		context. -->
+	<!-- They will automatically be acquired by the 'shiroFilter' bean above 
+		and made available -->
+	<!-- to the 'filterChainDefinitions' property. Or you can manually/explicitly 
+		add them -->
+	<!-- to the shiroFilter's 'filters' Map if desired. See its JavaDoc for 
+		more details. -->
+
+
+	<!-- 用户授权信息Cache,使用企业级的缓存如ehcache获得更好的性能 -->
+	<!-- Set a net.sf.ehcache.CacheManager instance here if you already have one.  If not, a new one
+             will be creaed with a default config:
+             <property name="cacheManager" ref="ehCacheManager"/> -->
+        <!-- If you don't have a pre-built net.sf.ehcache.CacheManager instance to inject, but you want
+             a specific Ehcache configuration to be used, specify that here.  If you don't, a default
+             will be used.:
+        <property name="cacheManagerConfigFile" value="classpath:some/path/to/ehcache.xml"/> -->
+	<!-- 
+	<bean id="shiroCacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+		
+	</bean>
+	 -->
+	<!-- 
+	<bean id="cacheManager" class="org.apache.shiro.cache.MemoryConstrainedCacheManager" />
+	 -->
+	
+	<!-- 保证实现了Shiro内部lifecycle函数的bean执行 -->
+	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+	
+	<!-- 开启Shiro注解的Spring配置方式的beans。在lifecycleBeanPostProcessor之后运行  -->
+	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor">
+		<!-- --><property name="proxyTargetClass" value="true" /> 
+	</bean>
+	
+	<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+    	<property name="securityManager" ref="securityManager"/>
+	</bean>
+	
+	<!-- Secure Spring remoting:  Ensure any Spring Remoting method invocations can be associated
+         with a Subject for security checks. -->
+    <!-- 
+    <bean id="secureRemoteInvocationExecutor" class="org.apache.shiro.spring.remoting.SecureRemoteInvocationExecutor">
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
+ 	-->
+ 	
+	<bean id="sha512Matcher" class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+		<!-- Modifying any piece of the matcher will likely invalidate the ability to match any passphrases in the DB -->
+		<property name="hashAlgorithmName" value="${shiro.hashAlgorithmName}" />
+		<property name="storedCredentialsHexEncoded" value="${shiro.storedCredentialsHexEncoded}" />
+		<property name="hashIterations" value="${shiro.hashIterations}" />
+	</bean>
+	
+	<!-- 項目自定义的Realm 登陆时与数据库交互的类-->
+	<bean id="myRealm" class="com.cssnb.baseframework.quickstart.shiro.MyJdbcRealm">
+	</bean>
+	
+	<!-- Used by the SecurityManager to access security data (users, roles, etc).
+         Many other realm implementations can be used too (PropertiesRealm,
+         LdapRealm, etc. -->
+         <!-- The 'bootstrapDataPopulator' Sha256 hashes the password
+                 (using the username as the salt) then base64 encodes it: -->
+                 <!-- true means hex encoded, false means base64 encoded -->
+    <!-- 
+    <bean id="jdbcRealm" class="org.apache.shiro.samples.spring.realm.SaltAwareJdbcRealm">
+        <property name="name" value="jdbcRealm"/>
+        <property name="dataSource" ref="dataSource"/>
+        <property name="credentialsMatcher">
+            
+            <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+                <property name="hashAlgorithmName" value="SHA-256"/>
+                
+                <property name="storedCredentialsHexEncoded" value="false"/>
+            </bean>
+        </property>
+    </bean>
+     -->
+</beans>

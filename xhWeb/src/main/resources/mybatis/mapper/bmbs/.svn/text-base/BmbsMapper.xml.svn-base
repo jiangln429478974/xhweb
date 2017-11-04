@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cssnb.bmbs.dao.BmbsMapper">
+
+	<select id="findBmmc" resultType="map">
+		select bm from xt_ftp
+	</select>
+
+	<!-- 遍历所有增量监控数据 -->
+	<!-- <select id="getbmbsList" resultType="map" parameterType="map"> select 
+		SX,BM,DZ,STATUS,XM,FTPUUID,a.RKRQ,a.BJZT from (SELECT L.BJZT,F.SX,FILENAME,BM,L.DZ,STATUS,L.USERID,to_char(L.RKRQ,'YYYY-MM-DD 
+		HH24:MI:SS') RKRQ,FTPUUID FROM XT_FTP F,XT_LOG_FTP L WHERE L.FTPUUID=F.UUID 
+		and L.userid !='123' ORDER BY RKRQ DESC) a LEFT JOIN xt_yhb b on a.USERID=b.yhm 
+		</select> -->
+	<!-- 按时间查询对应的数据 -->
+	<select id="getbmbsList" resultType="java.util.HashMap"
+		parameterType="map">
+		select SX,BM,DZ,STATUS,XM,FTPUUID,a.RKRQ,a.BJZT  from
+		(SELECT
+		L.BJZT,F.SX,FILENAME,BM,L.DZ,STATUS,L.USERID,to_char(L.RKRQ,'YYYY-MM-DD')
+		RKRQ,FTPUUID FROM XT_FTP F,XT_LOG_FTP L WHERE L.FTPUUID=F.UUID and 
+		L.wjly = #{wjly} 
+		ORDER BY RKRQ DESC) a LEFT JOIN xt_yhb b on a.USERID=b.yhm
+		order by RKRQ DESC
+	</select>
+
+	<select id="findbmmc" resultType="java.util.HashMap" parameterType="map">
+		select SX,BM,DZ,STATUS,XM,FTPUUID,a.RKRQ,a.BJZT from
+		(SELECT
+		L.BJZT,F.SX,FILENAME,BM,L.DZ,STATUS,L.USERID,to_char(L.RKRQ,'YYYY-MM-DD')
+		RKRQ,FTPUUID ,to_char(L.RKRQ, 'yyyy-mm-dd hh24:mi:ss') CXSJ FROM XT_FTP F,XT_LOG_FTP L 
+		WHERE L.FTPUUID=F.UUID and 
+		L.WJLY=#{wjly}
+<!-- 		L.userid !=#{user}  -->
+		ORDER BY RKRQ DESC) a LEFT JOIN xt_yhb b on a.USERID=b.yhm 
+		where 1=1 
+		<if test='BM != null and BM != "" '>
+			and bm=#{BM}
+		</if>
+		<if test='XM != null and XM != "" '>
+			and XM=#{XM}
+		</if>
+		<if test='fbsj_start != null and fbsj_start != "" '>
+			<if test="fbsj_start !=null and fbsj_start!='' and fbsj_end!=null and fbsj_end!=''">and CXSJ between #{fbsj_start} and #{fbsj_end}</if>
+		</if>
+		 
+		order by RKRQ DESC
+	</select>
+</mapper>
+
+
+
+

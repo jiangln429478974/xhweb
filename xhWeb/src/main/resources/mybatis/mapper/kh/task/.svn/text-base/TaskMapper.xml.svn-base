@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cssnb.task.dao.TaskMapper" >
+
+
+	<select id="getTaskList" resultType="map">
+		select  ID ,ZXZQ,  to_char(ZXSJ,'yyyy-mm-dd hh24:mi:ss') ZXSJ,
+		to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss') RKRQ,
+		to_char(GXRQ,'yyyy-mm-dd hh24:mi:ss') GXRQ, RWMC, ZT  from  XT_DSRW  order by RKRQ  desc
+	</select>
+	
+	<insert id="insertTask" parameterType="java.util.HashMap" >
+		insert into XT_DSRW (ID,ZXSJ,ZXZQ,RKRQ,GXRQ,ZT) values (#{ID},#{ZXSJ},#{ZXZQ},#{RKRQ},#{GXRQ},#{ZT})
+	</insert>
+	
+	<delete id="deleteTask" parameterType="java.util.HashMap" >
+		delete from XT_DSRW where ID=#{ID}
+	</delete>
+</mapper>

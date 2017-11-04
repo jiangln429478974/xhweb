@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop.xsd 
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+	<!-- <bean id="restServerConfig" class="gov.nbeic.nbzwy.rest.RestServerConfig">
+		<property name="serverAddr" value="${ws.web_rest_url_pt}" />
+	</bean>
+
+	<bean id="restServerConfigProcess" class="gov.nbeic.nbzwy.rest.RestServerConfig">
+		<property name="serverAddr" value="${ws.web_rest_url_process}" />
+	</bean>
+
+	<bean id="restServerConfigMetadata" class="gov.nbeic.nbzwy.rest.RestServerConfig">
+		<property name="serverAddr" value="${ws.web_rest_url_metadata}" />
+	</bean>
+
+	<bean class="gov.nbeic.nbzwy.rest.RestClient" primary="true">
+		<qualifier value="restClient" />
+		<property name="restTemplate" ref="restTemplate" />
+		<property name="config" ref="restServerConfig" />
+	</bean>
+
+	<bean class="gov.nbeic.nbzwy.rest.RestClient">
+		<qualifier value="restClientProcess" />
+		<property name="restTemplate" ref="restTemplate" />
+		<property name="config" ref="restServerConfigProcess" />
+	</bean>
+
+	<bean class="gov.nbeic.nbzwy.rest.RestClient">
+		<qualifier value="restClientMetadata" />
+		<property name="restTemplate" ref="restTemplate" />
+		<property name="config" ref="restServerConfigMetadata" />
+	</bean> -->
+
+<!-- 	<bean id="clientHttpRequestFactory"
+		class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory">
+		<property name="connectTimeout" value="30000000" />
+		<property name="readTimeout" value="30000000" />
+		<property name="connectionRequestTimeout" value="300000000" />
+	</bean> -->
+
+	<!-- <bean id="httpBasicInterceptor" class="gov.nbeic.nbzwy.rest.HttpBasicInterceptor">
+		<constructor-arg index="0" value="${rest.app_id}" />
+		<constructor-arg index="1" value="${rest.app_key}" />
+	</bean> -->
+
+	<bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+		<!-- <property name="requestFactory" ref="clientHttpRequestFactory" /> -->
+        <!---->
+		<property name="errorHandler" ref="defaultRestErrorHandler" />
+		 	<constructor-arg index="0">
+			<list>
+				<bean id="byteArrayHttpMessageConverter"
+					class="org.springframework.http.converter.ByteArrayHttpMessageConverter"></bean>
+				<bean id="stringHttpMessageConverter"
+					class="org.springframework.http.converter.StringHttpMessageConverter">
+					<constructor-arg value="UTF-8"></constructor-arg>
+				</bean>
+				<bean id="resourceHttpMessageConverter"
+					class="org.springframework.http.converter.ResourceHttpMessageConverter"></bean>
+				<bean id="sourceHttpMessageConverter"
+					class="org.springframework.http.converter.xml.SourceHttpMessageConverter"></bean>
+				<bean id="allEncompassingFormHttpMessageConverter"
+					class="org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter"></bean>
+				<bean id="jaxb2RootElementHttpMessageConverter"
+					class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter"></bean>
+				<bean id="mappingJackson2HttpMessageConverter"
+					class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter"></bean>
+			</list>
+		</constructor-arg>
+	</bean>
+
+	<!-- Bridge error handler -->
+	<bean id="defaultRestErrorHandler" class="com.cssnb.baseframework.commons.DefaultRestErrorHandler" />
+
+</beans>

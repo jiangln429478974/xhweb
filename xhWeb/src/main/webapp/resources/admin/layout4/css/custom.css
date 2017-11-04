@@ -1,0 +1,46 @@
+/* here you can put your own css to customize and override the theme */
+
+@media (min-width: 992px){
+.col-md-1 {
+    width: 11%;
+}
+}
+
+@media (max-width: 767px){
+.visible-xs-block {
+    margin-bottom: 10px;
+}
+}
+.portlet{    margin-bottom: 15px;}
+
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover{    border-top: 4px solid #F3565D;background:#F0F0F0;}
+.form-group {
+    margin-bottom: 5px;
+}
+.portlet.box > .portlet-title > .caption{
+	padding: 7px 0;
+	line-height: 20px;
+	font-size: 16px;
+}
+.portlet > .portlet-title{
+	min-height: 20px;
+}
+@media (min-width: 768px){
+.form-horizontal .control-label {
+     padding-top: 0px; 
+}
+}
+.form-inline{
+	margin-bottom: 10px;
+}
+@media (min-width: 768px){
+.form-inline .form-group {
+    margin-right: 15px;
+}
+}
+@media (min-width: 768px){
+.form-inline .form-control {
+    vertical-align: bottom;
+}
+}
+label{margin-bottom:3px;}

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cssnb.users.dao.RoleMapper" >
+
+
+<!-- 角色管理模块 -->
+<select id="getInit" resultType="java.util.HashMap"  parameterType="map">
+  select ID,JSM,ZT,JSMS,to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss')RKRQ,to_char(GXRQ,'yyyy-mm-dd hh24:mi:ss')GXRQ,AQJB from XT_JSB
+  <where>
+  	<if test="JSM!=null and JSM!='' and JSM!='请输入角色名'" >and JSM like '%${JSM}%'</if>
+  	<if test="JSMS!=null and JSMS!='' and JSMS!='请输入角色描述'">and JSMS like '%${JSMS}%'</if>
+  	<if test="ZT!=null and ZT!=''">and ZT=#{ZT}</if>
+  </where>
+  order by RKRQ desc
+</select>
+
+
+<select id="getRoleList" resultType="java.util.HashMap"  parameterType="map">
+  select ID,JSM,ZT,JSMS,to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss')RKRQ,to_char(GXRQ,'yyyy-mm-dd hh24:mi:ss')GXRQ,AQJB from XT_JSB
+  <where>
+  	<if test="ID!=null and ID!=''">and ID=#{ID}</if>
+  	<if test="JSM!=null and JSM!=''">and JSM=#{JSM}</if>
+  	<if test="XYB!=null and XYB!=''">and id in ('bd004325d76145f38bd963f0cfef0a6a','acfe19697da54bbdb21209bce51569f2')</if>
+  </where>
+    order by RKRQ desc
+</select>
+
+
+<insert id="insertRole" parameterType="java.util.HashMap" >
+ 	insert into XT_JSB
+  (ID,JSM,ZT,JSMS,RKRQ,AQJB)
+values
+  (#{ID},#{JSM},#{ZT},#{JSMS},#{RKRQ},#{AQJB})
+</insert>
+
+<select id="getYhjsb" resultType="int" parameterType="java.util.HashMap" >
+select count(*) from XT_YHJSB where jsid = #{ID}
+</select>
+
+<delete id="deleteRole" parameterType="java.util.HashMap" >
+delete from XT_JSB where ID=#{ID}
+</delete>
+
+<update id="updateRole"  parameterType="java.util.HashMap" >
+update XT_JSB SET ZT=#{ZT},JSMS=#{JSMS}
+<if test="JSM!=null and JSM!=''">,JSM=#{JSM}</if>
+<if test="AQJB!=null and AQJB!=''">,AQJB=#{AQJB}</if>
+<if test="USERID!=null and USERID!=''">,USERID=#{USERID}</if>
+<if test="GXRQ!=null and GXRQ!=''">,GXRQ=#{GXRQ}</if>
+WHERE ID=#{ID}
+</update>
+
+
+<!-- 角色功能菜单模块 -->
+<insert id="insertRoleGncd" parameterType="java.util.HashMap" >
+ 	insert into XT_GNCDSQB
+  (ID,JSID,GNCDMC,GNCDID,USERID,RKRQ)
+values
+  (#{ID},#{JSID},#{GNCDMC},#{GNCDID},#{USERID},#{RKRQ})
+</insert>
+
+<select id="getGncdList" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+	select ID,JSID,GNCDMC,USERID,to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss')RKRQ,to_char(GXRQ,'yyyy-mm-dd hh24:mi:ss')GXRQ from XT_GNCDSQB 
+	<where>
+		<if test="JSID!=null and JSID!=''">and JSID=#{JSID}</if>
+		<if test="GNCDID!=null and GNCDID!=''">and GNCDID=#{GNCDID}</if>
+	</where>
+	  order by RKRQ desc
+</select>
+
+<delete id="deleteRoleGncd" parameterType="java.util.HashMap" >
+delete from XT_GNCDSQB where JSID=#{JSID}
+</delete>
+
+
+<!-- 角色数据项授权模块 -->
+<!-- 查询所有已启用和是实体表的共享目录部门去重 -->
+<select id="getDataItemList" resultType="map"  parameterType="map">
+  select distinct a.BMID,b.BMMC from XT_GXMLB a,XT_BMB b where a.BMID = b.ID and a.SFQY=#{SFQY} and a.SFSTB=#{SFSTB}
+</select>
+
+<!-- 查询所有已启用和是实体表的共享目录根据部门id -->
+<select id="getDataItemSecList" resultType="map"  parameterType="map">
+  select ID,GXMLMC from XT_GXMLB where BMID = #{BMID}
+  order by RKRQ desc
+</select>
+
+<!-- 根据信息事项主键id获取信息内容 -->
+<select id="getXxnr" resultType="map" parameterType="map">
+	select ID,SJXZWMC from XT_GXMLMXB 
+	<where>
+		SJBID = #{ID}
+	</where>
+</select>
+
+<!-- 数据项授权添加到角色数据项授权表 -->
+<insert id="insertSjx" parameterType="java.util.HashMap">
+	insert into XT_SJXSQB
+	(ID,JSID,SJXID,USERID,RKRQ)
+	values
+	(#{ID},#{JSID},#{SJXID},#{USERID},#{RKRQ})
+</insert>
+
+<!-- 角色已经拥有的数据项 -->
+<select id="getOwnerSjx" resultType="map"  parameterType="map">
+	select ID,JSID,SJXID,USERID,to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss')RKRQ,to_char(GXRQ,'yyyy-mm-dd hh24:mi:ss')GXRQ from XT_SJXSQB
+	<where>
+		<if test="JSID !=null and JSID!=''">and JSID=#{JSID}</if>
+		<if test="SJBID !=null and SJBID!=''">and SJXID in 
+			(select ID from XT_GXMLMXB where SJBID=#{SJBID})
+		</if>
+	</where>
+</select>
+
+<!-- 根据信息事项id清空 某角色某信息事项下的数据项内容 -->
+<delete id="deleteSjx" parameterType="java.util.HashMap">
+	delete from XT_SJXSQB
+	<where>
+		<if test="JSID !=null and JSID!=''">and JSID=#{JSID}</if>
+		<if test="XXSXID !=null and XXSXID!=''">and SJXID in 
+			(select ID from XT_GXMLMXB where SJBID=#{XXSXID})
+		</if>
+	</where>
+</delete>
+
+</mapper>

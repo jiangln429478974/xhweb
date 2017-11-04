@@ -1,0 +1,35 @@
+@charset "utf-8";
+/* CSS Document */
+*{ margin:0}
+body{ font-family:"微软雅黑"; background-color:#fff; font-size:12px;}
+ul{border:0; padding:0;}
+ul li{ list-style:none;}
+a{ text-decoration:none;}
+img{ border:0;}
+
+
+.header{ background:url(../images/top2.png); height:77px; min-width:1000px;}
+.logo{ background:url(../images/top1.png) left top no-repeat;}
+.topmenu{ background:url(../images/top3.png) right top no-repeat; height:72px; padding-top:5px;}
+.topmenu .menu{ width:465px; float:right; height:62px;}
+.topmenu .menu a{ display:block; background:url(../images/navbga.png); width:84px; height:62px; float:left; margin-right:9px; font-family:"微软雅黑"; color:#fff; font-size:16px; text-align:center;}
+.topmenu .menu a:hover,.topmenu .menu .on{ display:block; background:url(../images/navbgb.png); width:84px; height:62px; float:left; margin-right:9px; font-family:"微软雅黑"; color:#005567; font-size:16px; text-align:center;}
+.topmenu .menu a em{ display:block;  width:27px; height:23px; margin:7px auto 4px;}
+.topmenu .menu .home em{  background:url(../images/inca01.png) 0px 0px no-repeat; }
+.topmenu .menu a.home:hover em{background:url(../images/incb01.png) 0px 0px no-repeat;}
+.topmenu .menu .icj em{  background:url(../images/inca01.png) 0px -23px no-repeat; }
+.topmenu .menu a.icj:hover em{background:url(../images/incb01.png) 0px -23px no-repeat;}
+.topmenu .menu .igx em{  background:url(../images/inca01.png) 0px -46px no-repeat; }
+.topmenu .menu a.igx:hover em{background:url(../images/incb01.png) 0px -46px no-repeat;}
+.topmenu .menu .igk em{  background:url(../images/inca01.png) 0px -69px no-repeat; }
+.topmenu .menu a.igk:hover em{background:url(../images/incb01.png) 0px -69px no-repeat;}
+.topmenu .menu .isz em{  background:url(../images/inca01.png) 0px -92px no-repeat; }
+.topmenu .menu a.isz:hover em{background:url(../images/incb01.png) 0px -92px no-repeat;}
+
+
+.index_left_l{ background-color:#d4ecf1; width:209px;height:500px; float:left;}
+
+
+.rtit{ background:url(../images/rtit.png) left top repeat-x; height:50px;}
+
+.ui-jqgrid-htable{height:30px;}

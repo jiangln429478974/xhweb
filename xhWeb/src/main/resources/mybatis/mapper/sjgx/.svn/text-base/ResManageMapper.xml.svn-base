@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cssnb.baseframework.quickstart.dao.sjgx.ResManageMapper">
+
+	<select id="findInfoList" resultType="map">
+	    SELECT  A.ID,A.DEPARTMENT,A.SHAREMODE_NAME,A.FREQUENCY_NAME,A.RESOURCE_NAME_CN,
+		TO_CHAR(J.LAST_UPDATE_TIME,'YYYY-MM-DD HH24:MI:SS') LAST_UPDATE_TIME,
+		NVL(K.TODAY_COUNT,'0/0') TODAY_COUNT,NVL(I.T_COUNT,0) T_COUNT,NVL(I.T_EXCEPTION_COUNT,0) T_EXCEPTION_COUNT
+		FROM  
+        (SELECT
+            A.ID,F.DEPARTMENT_NAME DEPARTMENT ,C.SHARE_MODE_NAME
+            SHAREMODE_NAME,D.FREQUENCY_NAME
+            FREQUENCY_NAME,H.RESOURCE_NAME_CN
+            ,H.RESOURCE_ID
+            FROM
+            RES_ORDER A,SYS_USER B,BM_ORDER_SHARE_MODE C,BM_ORDER_FREQUENCY
+            D,BM_ORDER_STATUS E,BM_DEPARTMENT F ,RES_ORDER_CONTENT G,RES_TABLE H
+            
+        	<where>
+            	A.USER_ID=B.USER_ID AND A.SHARE_MODE=C.ID AND A.FREQUENCY=D.ID AND
+              	A.STATUS=E.ID
+              	AND B.DEPARTMENT_ID=F.DEPARTMENT_ID(+) AND A.FLAG=0 AND A.STATUS=2 
+              	AND A.ID=G.RES_ORDER_ID AND G.RES_TABLE_ID = H.RESOURCE_ID
+              	<if test='userDepartmentId !=null and userDepartmentId !="" '>
+			    	and F.DEPARTMENT_ID like ''||#{userDepartmentId}||'' 
+				</if>
+				<if test='id != null and id != "" '>
+					and A.ID like ''||#{id}||''
+				</if>
+				<if test='sharemode != null and sharemode != "" '>
+					and C.SHARE_MODE_NAME like ''||#{sharemode}||''
+				</if>
+				<if test='frequency != null and frequency != "" '>
+					and D.FREQUENCY_NAME like ''||#{frequency}||''
+				</if>
+				<if test='department != null and department != "" '>
+					and F.DEPARTMENT_NAME like ''||#{department}||''
+				</if>
+            </where>  
+              ) A , 
+       (SELECT A.TASK_ID,SUM(A.COUNT) T_COUNT,SUM(A.EXCEPTION_COUNT) T_EXCEPTION_COUNT FROM RES_SHARE_LOG_STATS A
+         GROUP BY A.TASK_ID) I,
+       RES_SHARE_TASK J,
+      (select A.TASK_ID,A.EXCEPTION_COUNT||'/'||A.COUNT TODAY_COUNT from res_share_log_stats A
+      	WHERE trunc(A.LAST_UPDATE_TIME) =  trunc(systimestamp)) K
+	  WHERE 
+	  	A.ID = J.ORDER_ID(+) AND A.RESOURCE_ID=J.RES_ID(+) AND J.ID=I.TASK_ID(+) AND  J.ID=K.TASK_ID(+)
+	  ORDER BY A.ID
+	</select>
+
+	<update id="deleteInfo">
+		update RES_ORDER set FLAG=1 where id like
+		''||#{id}||''
+	</update>
+
+	<select id="getShareMode" resultType="map">
+		SELECT SHARE_MODE_NAME FROM
+		BM_ORDER_SHARE_MODE
+	</select>
+
+	<select id="getFrequency" resultType="map">
+		SELECT FREQUENCY_NAME FROM
+		BM_ORDER_FREQUENCY
+	</select>
+
+	<select id="getDepartment" resultType="map">
+		SELECT DEPARTMENT_NAME
+		FROM BM_DEPARTMENT
+	</select>
+
+	<select id="getDetail" resultType="map">
+		SELECT
+		A.ID,F.DEPARTMENT_NAME
+		DEPARTMENT ,C.SHARE_MODE_NAME SHAREMODE_NAME,D.FREQUENCY_NAME
+		FREQUENCY_NAME,
+		B.USER_NAME USER_NAME,
+		A.SHARE_DEMAND,A.REASON_USE_DESC,A.PROJECT_NAME,G.DB_IP
+		DB_IP,G.DB_INSTANCE_NAME DB_INC_NAME,G.DB_PORT,
+		G.DB_USER
+		DB_USER_NAME,G.DB_PASSWORD DB_PWD,A.STATUS,
+		A.REASON_USE_DESC
+		FROM
+		RES_ORDER A,SYS_USER
+		B,BM_ORDER_SHARE_MODE C,BM_ORDER_FREQUENCY
+		D,BM_ORDER_STATUS
+		E,BM_DEPARTMENT F ,
+		RES_ORDER_SYNC_CONF G
+		WHERE
+		A.USER_ID=B.USER_ID AND A.SHARE_MODE=C.ID AND A.FREQUENCY=D.ID AND
+		A.STATUS=E.ID
+		AND B.DEPARTMENT_ID=F.DEPARTMENT_ID(+) AND A.FLAG=0 AND
+		A.ID=G.ORDER_ID(+) AND 
+		A.ID like ''||#{id}||''
+	</select>
+
+	<resultMap id="mMap"
+		type="com.cssnb.baseframework.quickstart.entity.sjgx.ResOrderContent">
+		<result column="COL_NAME" jdbcType="VARCHAR" property="colName" />
+		<result column="TABLE_NAME" jdbcType="VARCHAR" property="tableName" />
+		<result column="DEPARTMENT_NAME" jdbcType="VARCHAR" property="departmentName" />
+	</resultMap>
+
+	<select id="getDetailContent" resultMap="mMap">
+		SELECT B.RESOURCE_NAME_CN TABLE_NAME,C.RES_SHOW_NAME COL_NAME,D.DEPARTMENT_NAME DEPARTMENT_NAME
+		FROM RES_ORDER_CONTENT A,RES_TABLE B,RES_FIELD C ,BM_DEPARTMENT D
+		WHERE A.RES_TABLE_ID=B.RESOURCE_ID AND B.RESOURCE_ID=C.RES_TABLE_ID AND C.RES_SHOW_NAME IS NOT NULL
+		AND B.DEPARTMENT_ID=D.DEPARTMENT_ID 
+		AND
+		A.RES_ORDER_ID like ''||#{id}||''
+	</select>
+
+	<select id="getResName" resultType="map">
+		SELECT ID,RESOURCE_NAME_CN
+		FROM RES_TABLE WHERE STATE=1
+	</select>
+
+	<insert id="addOrder">
+		insert into RES_ORDER
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="orderId != null">
+				ID,
+			</if>
+			<if test="userId != null">
+				USER_ID,
+			</if>
+			<if test="shareMode != null">
+				SHARE_MODE,
+			</if>
+			<if test="frequency != null">
+				FREQUENCY,
+			</if>
+			<if test="resDemand != null">
+				SHARE_DEMAND,
+			</if>
+			<if test="reasonUseDesc != null">
+				REASON_USE_DESC,
+			</if>  
+			<if test="projectName != null">
+				PROJECT_NAME,
+			</if>
+			FLAG,STATUS,LAST_UPDATE_TIME,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		    <if test="orderId != null">
+				#{orderId},
+			</if>
+			<if test="userId != null">
+				#{userId},
+			</if>
+			<if test="shareMode != null">
+				(SELECT ID FROM BM_ORDER_SHARE_MODE WHERE SHARE_MODE_NAME LIKE ''||#{shareMode}||''),
+			</if>
+			<if test="frequency != null">
+				(SELECT ID FROM BM_ORDER_FREQUENCY WHERE FREQUENCY_NAME LIKE ''||#{frequency}||''),
+			</if>
+			<if test="resDemand != null">
+				#{resDemand},
+			</if>
+			<if test="reasonUseDesc != null">
+				#{reasonUseDesc},
+			</if>
+			<if test="projectName != null">
+				#{projectName},
+			</if>
+			0,1,SYSTIMESTAMP,
+		</trim>
+	</insert>
+	
+	<insert id="addOrder4Content">
+	    insert into res_order_content
+	    <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="orderId != null">
+				RES_ORDER_ID,
+			</if>
+			<if test="resTableName != null">
+				RES_TABLE_ID,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		    <if test="orderId != null">
+				#{orderId},
+			</if>
+			<if test="resTableName != null">
+				(SELECT RESOURCE_ID  FROM RES_TABLE WHERE RESOURCE_NAME_CN LIKE ''||#{resTableName}||''),
+			</if>
+		</trim>
+	</insert>
+	
+	<insert id="addOrder4DBInfo">
+	    insert into RES_ORDER_SYNC_CONF
+	    <trim prefix="(" suffix=")" suffixOverrides=",">
+	        ID,
+			<if test="orderId != null">
+				ORDER_ID,
+			</if>
+			<if test="dbIp != null">
+				DB_IP,
+			</if>
+			<if test="dbInc != null">
+				DB_INSTANCE_NAME,
+			</if>
+			<if test="dbUsr != null">
+				DB_USER,
+			</if>
+			<if test="dbPwd != null">
+				DB_PASSWORD,
+			</if>
+			<if test="dbPort != null">
+				DB_PORT,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		    RES_ORDER_SYNC_CONF_SEQ.nextval,
+		    <if test="orderId != null">
+				#{orderId},
+			</if>
+			<if test="dbIp != null">
+				#{dbIp},
+			</if>
+			<if test="dbInc != null">
+				#{dbInc},
+			</if>
+			<if test="dbUsr != null">
+				#{dbUsr},
+			</if>
+			<if test="dbPwd != null">
+				#{dbPwd},
+			</if>
+			<if test="dbPort != null">
+				#{dbPort},
+			</if>
+		</trim>
+	</insert>
+	
+	<select id="getOrderStatus" resultType="map">
+		SELECT STATUS_NAME FROM BM_ORDER_STATUS
+	</select>
+	
+	<select id="findOrderCheckList" resultType="map">
+		SELECT
+		A.ID,F.DEPARTMENT_NAME DEPARTMENT ,C.SHARE_MODE_NAME
+		SHAREMODE_NAME,D.FREQUENCY_NAME
+		FREQUENCY_NAME,
+		TO_CHAR(A.LAST_UPDATE_TIME,'YYYY-MM-DD HH24:MI:SS')
+		LAST_UPDATE_TIME,
+		E.STATUS_NAME
+		FROM
+		RES_ORDER A,SYS_USER B,BM_ORDER_SHARE_MODE C,BM_ORDER_FREQUENCY
+		D,BM_ORDER_STATUS E,BM_DEPARTMENT F
+		<where>
+			A.USER_ID=B.USER_ID AND A.SHARE_MODE=C.ID AND A.FREQUENCY=D.ID AND
+			A.STATUS=E.ID
+			AND B.DEPARTMENT_ID=F.DEPARTMENT_ID(+) AND A.FLAG=0
+			<if test='userDepartmentId !=null and userDepartmentId !="" '>
+			    and F.DEPARTMENT_ID like ''||#{userDepartmentId}||'' 
+			</if>
+			<if test='id != null and id != "" '>
+				and A.ID like ''||#{id}||''
+			</if>
+			<if test='statusName != null and statusName != "" '>
+				and E.STATUS_NAME like ''||#{statusName}||''
+			</if>
+			<if test='department != null and department != "" '>
+				and F.DEPARTMENT_NAME like ''||#{department}||''
+			</if>
+		</where>
+	</select>
+	
+	<select id="getOrderByOrderId" resultType="map">
+	    SELECT A.ID,A.SHARE_DEMAND,A.REASON_USE_DESC,A.PROJECT_NAME,B.FREQUENCY_NAME,C.SHARE_MODE_NAME 
+		FROM RES_ORDER A,BM_ORDER_FREQUENCY B,BM_ORDER_SHARE_MODE C
+		WHERE A.SHARE_MODE=C.ID AND A.FREQUENCY=B.ID 
+		AND A.ID LIKE ''||#{orderID}||''
+	</select>
+	
+	<select id="getOrderContentByOrderId" resultType="map">
+	    SELECT B.RESOURCE_NAME_CN FROM RES_ORDER_CONTENT A,RES_TABLE B WHERE A.RES_TABLE_ID=B.RESOURCE_ID
+		AND  A.RES_ORDER_ID LIKE ''||#{orderID}||''
+	</select>
+	
+	<update id="updateOrder">  
+        update RES_ORDER set USER_ID = #{userId},SHARE_MODE = (SELECT ID FROM BM_ORDER_SHARE_MODE WHERE SHARE_MODE_NAME LIKE ''||#{shareMode}||''),
+        FREQUENCY=(SELECT ID FROM BM_ORDER_FREQUENCY WHERE FREQUENCY_NAME LIKE ''||#{frequency}||''),
+        SHARE_DEMAND=#{resDemand},REASON_USE_DESC=#{reasonUseDesc},PROJECT_NAME=#{projectName}
+        where ID = #{orderId}  
+    </update>  
+    
+	<delete id="deleteOrder4Content">
+	    delete from res_order_content where RES_ORDER_ID = #{orderId}  
+	</delete>
+	
+	<update id="updateOrderStatus">  
+        update RES_ORDER set STATUS = #{status} 
+        <if test='noPassReason != null and noPassReason != "" '>
+           , NO_PASS_REASON = #{noPassReason}
+        </if>
+        where ID = #{orderId}  
+    </update>  
+    
+	<select id="getShareCount" resultType="map">
+	   SELECT H.COUNT,H.EXCEPTION_COUNT,I.LAST_UPDATE_TIME,I.LAST_COUNT,I.LAST_EX_COUNT 
+	   FROM 
+		(select SUM(A.COUNT) COUNT,SUM(A.EXCEPTION_COUNT) EXCEPTION_COUNT from RES_SHARE_LOG_STATS A,RES_SHARE_TASK B 
+					WHERE A.TASK_ID = B.ID AND B.ORDER_ID like ''||#{id}||''
+					GROUP BY B.ORDER_ID) H,
+		(SELECT * FROM (
+			select MAX(A.LAST_UPDATE_TIME) LAST_UPDATE_TIME,SUM(A.COUNT) LAST_COUNT,SUM
+
+		(A.EXCEPTION_COUNT) LAST_EX_COUNT from RES_SHARE_LOG_STATS A,RES_SHARE_TASK B 
+			WHERE A.TASK_ID = B.ID AND B.ORDER_ID like ''||#{id}||''
+			GROUP BY A.LAST_UPDATE_TIME
+			ORDER BY  A.LAST_UPDATE_TIME DESC) 
+		<![CDATA[	WHERE rownum <= 1	]]>
+		) I
+	</select>
+	
+	<insert id="addShareTask" >
+		insert into res_share_task(ID,ORDER_ID,RES_ID,STATUS) 
+		select RES_SHARE_TASK_SEQ.nextval,a.id,b.res_table_id,'1' from res_order a,res_order_content b 
+		where a.id=#{orderId} and a.id = b.res_order_id
+	</insert>
+</mapper>

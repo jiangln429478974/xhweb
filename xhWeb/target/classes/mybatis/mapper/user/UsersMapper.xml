@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cssnb.users.dao.UsersMapper" >
+
+
+
+<select id="getInit" resultType="java.util.HashMap"  parameterType="map">
+  select a.*,b.BMMC ,c.qymc  from XT_YHB a,XT_BMB b ,XT_QY_DMB c 
+  <where>
+  	a.BMID=B.ID 
+  	and b.qyid =c.unid 
+  	and a.id in (select max (a.id)  from XT_YHB a group by a.YHM)
+  	<if test="xm!=null and xm!=''">and a.XM like '%${xm}%'</if>
+  	<if test="sjhm!=null and sjhm!=''">and a.JSSJHM=#{sjhm}</if>
+  	<if test="yhm!=null and yhm!=''">and a.YHM like '%${yhm}%'</if>
+  	<if test="jsid!=null and jsid!=''">and a.ID in (select YHID from XT_YHJSB where JSID=#{jsid})</if>
+  	<if test="bmid!=null and bmid!=''">and a.BMID=#{bmid}</if>
+  	<if test="QYID!=null and QYID!=''">and b.QYID=#{QYID}</if>
+  </where>
+  order by a.RKRQ desc
+</select>
+
+
+<select id="getUserList" resultType="java.util.HashMap"  parameterType="map"  >
+  select distinct a.*  from XT_YHB a 
+  <where>
+  1=1
+  	<if test="ID!=null and ID!=''">and a.ID=#{ID}</if>
+  	<if test="YHM!=null">and a.YHM=#{YHM}</if>
+  	<if test="username!=null">and a.YHM=#{username}</if>
+  	<if test="password!=null">and a.MM=#{password}</if>
+  </where>
+    order by a.RKRQ desc
+</select>
+
+ 
+
+<insert id="insertUser" parameterType="java.util.HashMap" >
+ 	insert into XT_YHB
+  (ID,YHM,MM,SFCA,CABZF,BMID ,ZT,XM,JSSJHM,DJYX,RKRQ,ZW,SXRQ ,USERID,GXRQ)
+values
+  (#{ID},#{YHM},#{MM},#{SFCA},#{CABZF},#{BMID} ,#{ZT},#{XM},#{JSSJHM},#{DJYX},#{RKRQ},#{ZW},#{SXRQ},#{USERID},#{RKRQ} )
+</insert>
+
+<delete id="deleteUser" parameterType="java.util.HashMap" >
+	delete from XT_YHB where ID=#{ID}
+</delete>
+
+<update id="updateUser"  parameterType="java.util.HashMap" >
+update XT_YHB SET ZT=#{ZT}
+<if test="YHM!=null and YHM!=''">,YHM=#{YHM}</if>
+<if test="BMID!=null and BMID!=''">,BMID=#{BMID}</if>
+<if test="XM!=null and XM!=''">,XM=#{XM}</if>
+<if test="JSSJHM!=null and JSSJHM!=''">,JSSJHM=#{JSSJHM}</if>
+<if test="DJYX!=null and DJYX!=''">,DJYX=#{DJYX}</if>
+<if test="MM!=null and MM!=''">,MM=#{MM}</if>
+<if test="USERID!=null and USERID!=''">,USERID=#{USERID}</if>
+<if test="GXRQ!=null and GXRQ!=''">,GXRQ=#{GXRQ}</if>
+<if test="SFCA!=null and SFCA!=''">,SFCA=#{SFCA}</if>
+<if test="CABZF!=null and CABZF!=''">,CABZF=#{CABZF}</if>
+<if test="CS!=null and CS!=''">,CS=#{CS}</if>
+<if test="ZW!=null and ZW!=''">,ZW=#{ZW}</if>
+
+WHERE ID=#{ID}
+</update>
+
+<update id="resetPwd" parameterType="java.util.HashMap">
+update XT_YHB set MM=#{XMM} where ID=#{ID}
+</update>
+
+<!-- 用户角色 -->
+<!-- 添加用户角色 -->
+<insert id="insertYhJs" parameterType="java.util.HashMap" >
+	insert into XT_YHJSB
+	(ID,JSID,YHID,USERID,RKRQ)
+	values
+	(#{ID},#{JSID},#{YHID},#{USERID},#{RKRQ})
+</insert>
+
+<!-- 获取用户角色列表 -->
+<select id="getYhJsList" parameterType="map" resultType="map">
+	select b.JSM,a.ID,a.JSID,a.YHID,a.USERID,to_char(a.RKRQ,'yyyy-mm-dd hh24:mi:ss')RKRQ,to_char(a.GXRQ,'yyyy-mm-dd hh24:mi:ss')GXRQ
+	from XT_YHJSB a join XT_JSB b
+	on a.JSID = B.ID
+	<where>
+		<if test="YHID!=null and YHID!=''">and a.YHID=#{YHID}</if>
+	</where>
+</select>
+
+<!-- 删除用户角色 -->
+<delete id="deleteYhJs" parameterType="map">
+	delete from XT_YHJSB
+	<where>
+		<if test="YHID!=null and YHID!=''">and YHID=#{YHID}</if>
+	</where>
+</delete>
+
+<!-- 根据当前登录人取出当前用户名 -->
+<select id="getUserName" parameterType="string" resultType="string">
+     select YHM from XT_YHB where YHM=#{userName}
+</select>
+
+<!-- 根据当前登陆人取出密码 -->
+<select id="vilidate" parameterType="string" resultType="string">
+     select MM from XT_YHB where YHM=#{userName}
+</select>
+<!-- 根据当前登陆人取出状态 -->
+<select id="zt" parameterType="string" resultType="string">
+     select ZT from XT_YHB where YHM=#{userName}
+</select>
+
+<!-- 根据当前登录人取出当前用户名 -->
+<select id="getCa" resultType="java.util.HashMap"  parameterType="map"  >
+     select YHM,MM,CABZF from XT_YHB where CABZF = #{ca,jdbcType=VARCHAR}
+</select>
+<!-- 根据当前登录人CA取出当前用户名 -->
+<select id="getUsernameByca" parameterType="string" resultType="string">
+     select YHM from XT_YHB where CABZF = #{ca,jdbcType=VARCHAR}
+</select>
+<!-- 根据当前登陆人取出密码 -->
+<select id="vilidateByca" parameterType="string" resultType="string">
+     select MM from XT_YHB where  CABZF = #{ca,jdbcType=VARCHAR}
+</select>
+ <insert id="addYzm" parameterType="java.util.HashMap" >
+  insert into XT_Login_YZM (  uuid,  yzm,tel,starttime,endtime,sfyx  ) 
+   values(#{UUID},#{YZM},#{TEL},sysdate , sysdate+5/(24*60) ,#{SFYX} )
+ </insert> 
+ <select id="checkYzm" parameterType="java.util.HashMap" resultType="int">
+   select count(1)  from  XT_Login_YZM   where  yzm=#{YZM} 
+   and sysdate &lt;= endtime 
+   and sfyx=#{SFYX}
+   and tel =#{TEL}
+</select>
+<select id="updateYzm" parameterType="java.util.HashMap" >
+ 	update  XT_Login_YZM set sfyx=#{SFYX}  where  yzm=#{YZM} 
+</select>
+</mapper>

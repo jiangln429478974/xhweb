@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cssnb.users.dao.DeptMapper" >
+
+<select id="getInit" resultType="java.util.HashMap"  parameterType="map">
+    select ID,BMMC,BMMS,to_char(RKRQ,'yyyy-mm-dd hh24:mi:ss')RKRQ,
+          to_char(GXRQ,'yyyy-mm-dd hh24:mi:ss')GXRQ,PX,BMLX  ,a.ISXYB , b.qymc  
+     from XT_BMB a left join xt_qy_dmb b on a.qyid= b.unid 
+    <where>
+  	a.id in (select max(id) from XT_BMB group by BMMC)
+  	<if test="ISXYB!=null and ISXYB!=''">and a.ISXYB=#{ISXYB}</if>
+  	<if test="BMMC!=null and BMMC!=''">and a.BMMC like '%${BMMC}%'</if>
+  	<if test="QYMC!=null and QYMC!=''">and b.QYMC=#{QYMC}</if>
+  	<if test="BMLX!=null and BMLX!=''">and a.BMLX=#{BMLX}</if>
+ 	<if test="QYID!=null and QYID!=''">and a.QYID=#{QYID}</if>
+  </where>
+  order by a.PX desc,a.RKRQ desc
+</select>
+
+<select id="getDeptList" resultType="java.util.HashMap"  parameterType="map">
+  select a.ID,a.BMMC,a.BMMS,to_char(a.RKRQ,'yyyy-mm-dd hh24:mi:ss')RKRQ,
+ to_char(a.GXRQ,'yyyy-mm-dd hh24:mi:ss')GXRQ,a.PX,a.BMLX , 
+ a.qyid , a.isxyb , b.qymc from XT_BMB a , xt_qy_dmb b 
+  <where>
+     a.qyid=b.unid 
+  	<if test="ID!=null and ID!=''">and a.ID=#{ID}</if>
+  	<if test="BMMC!=null and BMMC!=''">and a.BMMC=#{BMMC}</if>
+  	<if test="QYID!=null and QYID!=''">and a.QYID=#{QYID} and a.isxyb =3 </if>
+  </where>
+  order by RKRQ desc
+</select>
+
+<select id="getSsqyList" resultType="java.util.HashMap"  parameterType="map">
+  select  *  from xt_qy_dmb
+  <where>
+  	 <if test="QYID!=null and QYID!=''"> and unid <![CDATA[<>]]> #{QYID} </if>
+  	 <if test="QYIDYES!=null and QYIDYES!=''"> and unid  = #{QYIDYES} </if>
+  </where>
+  order by QYDM  
+</select>
+
+<insert id="insertDept" parameterType="java.util.HashMap" >
+ 	insert into XT_BMB (ID,BMMC,RKRQ,PX,QYID,ISXYB)
+values
+  (#{ID},#{BMMC},#{RKRQ},#{PX},#{QYID},  #{ISXYB}  )
+</insert>
+
+<select id="getYhb" resultType="int" parameterType="java.util.HashMap" >
+select count(*) from XT_YHB where BMID = #{ID}
+</select>
+<delete id="deleteDept" parameterType="java.util.HashMap" >
+delete from XT_BMB where ID=#{ID}
+
+</delete>
+
+<update id="updateDept"  parameterType="java.util.HashMap" >
+update XT_BMB SET BMMC=#{BMMC}
+<if test="USERID!=null and USERID!=''">,USERID=#{USERID}</if>
+<if test="GXRQ!=null and GXRQ!=''">,GXRQ=#{GXRQ}</if>
+<if test="PX!=null and PX!=''">,PX=#{PX}</if>
+<if test="BMLX!=null and BMLX!=''">,BMLX=#{BMLX}</if>
+<if test="QYID!=null and QYID!=''">,QYID=#{QYID}</if>
+<if test="ISXYB!=null and ISXYB!=''">,ISXYB=#{ISXYB}</if>
+WHERE ID=#{ID}
+</update>
+
+<select id="getBmpx" resultType="string"  parameterType="map">
+  select   b.qydm||lpad(count(*)+1,3,0) as px , b.qymc   from xt_bmb a , xt_qy_dmb b 
+  where    a.qyid = b.unid  
+  and a.qyid  = #{QYID}
+ group by  b.qymc,b.qydm
+</select>
+</mapper>

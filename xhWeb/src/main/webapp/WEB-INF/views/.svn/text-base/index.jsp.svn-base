@@ -1,0 +1,1015 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib uri="http://www.rapid-framework.org.cn/rapid" prefix="rapid" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
+<c:set var="rs" value="${ctx}/resources" />
+<rapid:override name="title">宁波市公共信用信息工作平台</rapid:override>
+<rapid:override name="css">
+    <link href="${rs}/css/plugins/jQueryUI/jquery-ui-1.10.4.custom.min.css" rel="stylesheet">
+    <!-- Data Tables -->
+    <link href="${rs}/css/plugins/jqgrid/ui.jqgrid.css" rel="stylesheet">
+    <link href="${rs}/js/plugins/layer/skin/layer.css" rel="stylesheet">
+    <style>
+        /* Additional style to fix warning dialog position */
+        #alertmod_table_list_2 {
+            top: 900px !important;
+        }
+.portlet-title{  height:41px;}	
+.portlet-title span{ color:#fff; font-size:14px; line-height:39px; display:block; width:75px; height:39px; float:left; text-align:center; cursor:pointer;  margin:2px 2px 0;}
+.portlet-title .gztt{ color:#fff; font-size:16px;display:block; width:100px; height:41px;line-height:41px;font-style:normal;float:left; text-align:center;}		
+.portlet-title span:hover,.navdd .on{ background-color:#0073a5;
+
+
+
+height:37px; line-height:37px;margin-top:4px;
+    -moz-border-radius: 5px 5px 0 0;      /* Gecko browsers */
+    -webkit-border-radius: 5px 5px 0 0;   /* Webkit browsers */
+    border-radius:5px 5px 0 0;            /* W3C syntax */
+
+}
+ 
+/*全局s*/ 
+
+*{ margin:0;}
+body{  font-family:"微软雅黑","Hiragino Sans GB"; font-size:12px;}
+a{ text-decoration:none; }
+ul{ margin:0; border:0; padding:0;}
+ul li{ list-style:none;}
+/*全局j*/ 
+.dbsx{  -moz-border-radius: 5px;      /* Gecko browsers */
+    -webkit-border-radius: 5px;   /* Webkit browsers */
+    border-radius:5px;            /* W3C syntax */ border:1px solid #0cacc4; height:40px; position:relative;background-color:#fff; }
+
+.dbsx_bt{ width:125px; background-color:#0cacc4;  line-height:40px; float:left; color:#fff; padding:0 0 0 30px; font-size:16px;position:relative;}
+.dbsx_sy{ width:125px; background-color:#123456;  line-height:40px; float:left; color:#fff; padding:0 0 0 30px; font-size:16px;position:relative;}
+.dbsx_bt:after{
+	 content: " ";
+	display:block;
+	width:0px;
+    height: 0px;
+	
+    border-top: 8px solid transparent;
+    border-left: 6px solid #0cacc4;
+    border-bottom: 8px solid transparent;
+	position:absolute;
+	left:125px;
+	top:12px;
+}
+.dbsx_nr{ padding:0 20px;}
+.dbsx_nr ul{ padding:0 20px 0 140px;}
+.dbsx_nr ul li{ float:left; padding:0 15px; line-height:40px; font-size:14px; color:#00a5e9;}
+.dbsx_nr ul li span{ color:red;}
+.dbsx_nr ul li .fontv{ color:#777}
+.dbsx_nr ul li .fontw{ color:#00a5e9}
+.dbsx_nr ul li a{ color:#00a5e9;}
+.dbsx_nr ul li a:hover{text-decoration:underline; color:#168cbc;}
+
+.listc_div{ padding:0 5px;}
+.listc_div ul li{ line-height:26px; padding:5px; font-size:14px;}
+.listc_div ul li span{ float:right; font-size:12px; color:#666;}
+.listc_div ul li a{ color:#000; font-size:14px;}
+.listc_div ul li a:hover{ text-decoration:underline; color:#006ec2;}
+
+.listc_div_more{display: inline-block; float: right;  padding: 12px 0 8px;}
+
+@media (max-width: 850px){
+	.dbsx {
+	    height: inherit;
+	}
+}
+@media (max-width: 850px){
+	.dbsx_nr ul li {
+	    float: inherit;
+	}
+}
+@media (max-width: 1130px){
+	.dbsx_nr ul {
+	    padding: 0px 6px 0 120px;
+	}
+}
+@media (max-width: 1130px){
+	.dbsx_nr ul li {
+	    padding: 0px 6px;
+	}
+}
+@media (max-width: 1024px){
+	.dbsx_nr ul {
+	    padding: 0px 6px 0 108px;
+	}
+}
+@media (max-width: 1024px){
+	.dbsx_nr ul li {
+	    padding: 0px 2px;
+	}
+}
+
+</style>
+</rapid:override>
+<rapid:override name="content">
+
+			 <div class="dbsx">
+            	<div class="dbsx_bt">待办事项</div>
+                <div class="dbsx_nr">
+                	<ul>
+                    <li><a id="yycl" href="#"><span id="zxyy" class="fontw"></span><span id="bmyy"  class="fontw"></span></a></li>
+                    <li><a id="hiddengx" href="#"> <span id="scdata" class="fontw"></span></a></li>
+                    <li><a id="hiddenxx" href="${ctx}/message/getZnmessage"> <span id="zndata" class="fontw"></span></a></li> 
+                	</ul>
+                </div>
+               <div class="dbsx_nr" style="display:none;">
+                	<ul>
+                    <li><a id="yycl" href="#"><span id="zxyy" class="fontw"></span><span id="bmyy"  class="fontw"></span></a></li>
+                    <li><a id="hiddengx" href="#"> <span id="scdata" class="fontw"></span></a></li>
+                    <li><a id="hiddenxx" href="${ctx}/message/getZnmessage"> <span id="zndata" class="fontw"></span></a></li> 
+                	</ul>
+                </div>
+                
+            </div>
+             <input type = "hidden" value ="${sessionScope.loginname }"/>
+            <br/>
+<!-- 			<div class="row margin-top-0"> -->
+<!-- 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12"> -->
+<!-- 				<a id="yycl" class="dashboard-stat dashboard-stat-light red-soft"   > -->
+<!-- 						<div class="visual"> -->
+<!-- 							<i class="fa fa-pencil-square"></i> -->
+<!-- 						</div> -->
+<!-- 						<div class="details"> -->
+<!-- 							<div class="number"> -->
+<!-- 								 异议处理 -->
+<!-- 							</div> -->
+<!-- 							<div class="desc"> -->
+<!-- 								<big id="zxyy"></big> -->
+<!-- 								<big id="bmyy"></big> -->
+<!-- 							</div> -->
+<!-- 						</div> -->
+<!-- 						</a> -->
+					
+<!-- 				</div> -->
+<!-- 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12"> -->
+<!-- 					<a id="hiddengx" class="dashboard-stat dashboard-stat-light blue-soft"  > -->
+<!-- 							<div class="visual"> -->
+<!-- 								<i class="fa fa-navicon"></i> -->
+<!-- 							</div> -->
+<!-- 							<div class="details"> -->
+<!-- 								<div id="gxtitle" class="number"> -->
+<!-- 								</div> -->
+<!-- 								<div class="desc"> -->
+<!-- 									 <big id="scdata"></big> -->
+<!-- 								</div> -->
+<!-- 							</div> -->
+<!-- 							</a> -->
+<!-- 				</div> -->
+<!-- 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12"> -->
+<%-- 					<a id="hiddenxx" href="${ctx}/message/getZnmessage" class="dashboard-stat dashboard-stat-light green-soft"> --%>
+<!-- 						<div class="visual"> -->
+<!-- 							<i class="fa fa-comments"></i> -->
+<!-- 						</div> -->
+<!-- 						<div class="details"> -->
+<!-- 							<div id="zntitle" class="number"> -->
+								 
+<!-- 							</div> -->
+<!-- 							<div class="desc"> -->
+<!-- 								 <big id="zndata"></big> -->
+<!-- 							</div> -->
+<!-- 						</div> -->
+<!-- 						</a> -->
+<!-- 				</div> -->
+<!-- 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12" > -->
+<!-- 					<a id="zxzx" class="dashboard-stat dashboard-stat-light purple-soft"  > -->
+<!-- 						<div class="visual"> -->
+<!-- 							<i class="fa fa-globe"></i> -->
+<!-- 						</div> -->
+<!-- 						<div class="details"> -->
+<!-- 							<div class="number" id="bmzx"> -->
+<!-- 							</div> -->
+<!-- 							<div class="desc"> -->
+<!-- 								 <big id="znxx"></big><big id="zxdata"></big> -->
+<!-- 							</div> -->
+<!-- 						</div> -->
+<!-- 						</a> -->
+					
+<!-- 				</div> -->
+<!-- 			</div>  -->
+			<div class="row">
+				<div class="col-md-5 col-sm-12">
+					<div class="portlet box blue">
+						<div class="portlet-title">
+					  <div class="">
+						<div class="navdd">
+								<em class="gztt">
+			                           <i class="fa fa-comments"></i> 通知公告&nbsp;&nbsp;</em> 
+ 						 </div>
+ 						 </div>
+							<div class="listc_div_more">
+								<a href="" id="gg" style="color:#FFF">更多</a>
+							</div>
+						
+						</div>
+						<div  style="min-height:210px;" class="portlet-body">
+<!-- 							<div class="table-scrollable"> -->
+<!-- 								<table class="table table-bordered table-hover"  id="tzgg"> -->
+<!-- 								</table> -->
+						<div class="listc_div">
+			            	<ul id="tzgg">
+			
+			                </ul>
+			            </div>
+								
+								
+								
+<!-- 							</div> -->
+						</div>
+					</div>
+				</div>
+				
+				
+				<div class="col-md-7 col-sm-12">
+					<div class="portlet box blue">
+						<div class="portlet-title">
+							<div class="">
+                                   <div class="navdd">
+			                           <em class="gztt">
+			                           <i class="fa fa-folder"></i> 工作动态&nbsp;&nbsp;|</em> 
+			                           <span onclick="getDt('gjdt')"  id="gjdtlm">国家动态</span>
+			                           <span onclick="getDt('ssdt')"  id="ssdtlm">省市动态</span>
+			                           <span onclick="getDt('nbdt')"  id="nbdtlm" class="on" >宁波动态</span>
+			                           <span onclick="getDt('xsqdt')" id="xsqdtlm">县市区动态</span>
+			                           <span onclick="getDt('dxal')" id="dxal">典型案例</span>
+			                          </div>
+							</div>
+							<div class="listc_div_more">
+								<a href="${ctx}/Initpage/toxydtlist?xydt=nbdt" id="xydt" style="color:#FFF">更多</a>
+							</div>
+						</div>
+						 <!--国家动态 -->
+						<div id="gjdt" style="display:none;"  style="height:210px;" class="portlet-body">
+							 <iframe name="left" id="rightMain" src="http://3w.nbcredit.gov.cn/col/col101/index.html" frameborder="false" 
+							 scrolling="no" style="border:none;" width="100%"  height="180"  style="display:none">
+							 </iframe>
+						</div>
+						 <!--省市动态 -->
+						<div id="ssdt" style="display:none;"   style="height:210px;" class="portlet-body">
+							 <iframe name="left" id="rightMain" src="http://3w.nbcredit.gov.cn/col/col102/index.html" frameborder="false" 
+							 scrolling="auto" style="border:none;" width="100%"  height="180"  style="display:none">
+							 </iframe>
+						</div>
+					    <!--宁波动态 -->
+						<div id="nbdt"  style="height:210px;" class="portlet-body">
+							 <iframe name="left" id="rightMain" src="http://3w.nbcredit.gov.cn/col/col103/index.html" frameborder="false" 
+							 scrolling="auto" style="border:none;" width="100%"  height="180"  style="display:none">
+							 </iframe>
+						</div>
+						<!--县市区动态 -->
+						<div id="xsqdt" style="display:none;" style="height:210px;" class="portlet-body">
+							 <iframe name="left" id="rightMain" src="http://3w.nbcredit.gov.cn/col/col104/index.html" frameborder="false" 
+							 scrolling="auto" style="border:none;" width="100%"  height="180"  style="display:none">
+							 </iframe>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+			
+			
+			
+			
+			<div class="col-md-5 col-sm-12">
+					<div class="portlet box blue">
+						<div class="portlet-title">
+							<div class="">
+                                   <div class="navdd">
+			                           <em class="gztt">
+			                           <i class="fa fa-folder"></i> 政策文件&nbsp;&nbsp;</em>  
+			                          </div>
+							</div>
+							<div class="listc_div_more">
+								<a href="${ctx}/Initpage/tozcwjlist" id="xydt" style="color:#FFF">更多</a>
+							</div>
+						</div>
+						 <!--国家动态 -->
+						<div id="gjdt"   style="height:210px;" class="portlet-body">
+							<iframe name="left" id="rightMain" src="http://3w.nbcredit.gov.cn/col/col89/index.html" frameborder="false" 
+							 scrolling="auto" style="border:none;" width="100%"  height="180" allowtransparency="true">
+							 </iframe>
+						</div> 
+					</div>
+				</div>
+			
+			
+<!-- 				<div class="col-md-6" style="width:60%"> -->
+<!-- 					<div class="portlet box blue"> -->
+<!-- 						<div class="portlet-title"> -->
+<!-- 							<div class="caption"> -->
+<!-- 								<i class="fa fa-comments"></i>政策文件 -->
+<!-- 							</div> -->
+<!-- 							<div class="tools"> -->
+<%-- 								<a href="${ctx}/Initpage/tozcwjlist" id="zcwj" style="color:#FFF">更多</a> --%>
+<!-- 							</div> -->
+<!-- 						</div> -->
+<!-- 						<div  style="height:200px;" class="portlet-body"> -->
+
+<!-- 						<iframe name="left" id="rightMain" src="http://3w.nbcredit.gov.cn/col/col89/index.html" frameborder="false"  -->
+<!-- 							 scrolling="auto" style="border:none;" width="100%"  height="180" allowtransparency="true"> -->
+<!-- 							 </iframe> -->
+								
+								
+								
+<!-- 						</div> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+				
+				
+<!-- 				<div class="col-md-5 col-sm-12"> -->
+<!-- 					<div class="portlet box blue"> -->
+<!-- 						<div class="portlet-title"> -->
+<!-- 						   <div class=""> -->
+<!--                                    <div class="navdd"> -->
+<!-- 			                           <em class="gztt"> -->
+<!-- 			                            <i class="fa fa-folder"></i> 政策文件&nbsp;&nbsp;</em>  -->
+<!-- 			                          </div> -->
+<!-- 							</div> -->
+<!-- 						</div> -->
+<!-- 						<div style="min-height:210px;" class="portlet-body"> -->
+<!-- 							<div class="listc_div"> -->
+<!-- 								<ul> -->
+<%-- 									 <li><span>06-13</span>&bull;&nbsp;&nbsp;<a href="${ctx}/file/downloadfile?filename=khtz.pdf" title="关于2016年度“信用宁波”建设工作目标管理考核的通知甬信用办〔2016〕4号">关于2016年度“信用宁波”建设工作目...</a>	 </li> --%>
+<%-- 									 <li><span>06-13</span>&bull;&nbsp;&nbsp;<a href="${ctx}/file/downloadfile?filename=glbf.pdf" title="关于印发《宁波市公共信用信息查询办法》（试行）、《宁波市公共信用信息异议处理办法》（试行）的通知">关于印发《宁波市公共信用信息查询办...</a>	 </li> --%>
+<%-- 									 <li><span>06-13</span>&bull;&nbsp;&nbsp;<a href="${ctx}/file/downloadfile?filename=gzyd.pdf" title="关于印发《2016年宁波市社会信用体系建设工作要点》的通知(甬信用办〔2016〕3号)">关于印发《2016年宁波市社会信用体系...</a>	 </li> --%>
+<%-- 									 <li><span>06-13</span>&bull;&nbsp;&nbsp;<a href="${ctx}/file/downloadfile?filename=zjmlbc.pdf" title="关于《宁波市自然人公共信用信息征集目录（2015版）》的补充意见">关于《宁波市自然人公共信用信息征集...</a>	 </li> --%>
+<%-- 									 <li><span>06-13</span>&bull;&nbsp;&nbsp;<a href="${ctx}/file/downloadfile?filename=zjml.pdf" title="关于印发《宁波市自然人公共信用信息征集目录（2015版）》的通知">关于印发《宁波市自然人公共信用信息...</a>	 </li> --%>
+<!-- 							 </ul> -->
+<!-- 							</div> -->
+
+<!-- 						</div> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+				
+				<div class="col-md-7 col-sm-12">
+					<div class="portlet box blue">
+						<div class="portlet-title">
+<!-- 							<div class="caption"> -->
+<!-- 								<i class="fa fa-folder"></i>情况通报 -->
+<!-- 							</div> -->
+							    <div class="">
+                                   <div class="navdd">
+			                           <em class="gztt">
+			                           <i class="fa fa-folder"></i> 情况通报&nbsp;&nbsp;|</em> 
+<!-- 			                           <span onclick="getTb('xxgj')"  id="xxgjlm" class="on" >信息归集</span> -->
+			                           <span onclick="getTb('ptyx')"  id="ptyxlm" class="on" style="width:90px;" >平台运行情况</span>
+			                            <span onclick="getTb('lhcj')"  id="lhcjlm" style="width:90px;">联合惩戒情况</span>
+			                           <span onclick="getTb('csxyjc')" id="csxyjclm" style="width:90px;">城市信用监测</span>
+			                          </div>
+							    </div>
+							<div class="listc_div_more">
+								<a href="${ctx}/Initpage/togztblist?gztb=ptyx"" id="gztb" style="color:#FFF">更多</a>
+							</div>
+
+						</div>
+ 
+					     	
+							<!--联合惩戒 -->
+							 <div id="lhcj" style="display:none;min-height:210px;"   class="portlet-body">
+							 <iframe name="left" id="rightMain" src="http://3w.nbcredit.gov.cn/col/col106/index.html" frameborder="false" 
+							 scrolling="no" style="border:none;" width="100%"  height="180"  style="display:none">
+							 </iframe>
+					     	</div>
+					     	
+							<!--平台运行 -->
+							 <div id="ptyx" style="display:block;min-height:210px;"   class="portlet-body">
+							 <iframe name="left" id="rightMain" src="http://3w.nbcredit.gov.cn/col/col107/index.html" frameborder="false" 
+							 scrolling="no" style="border:none;" width="100%"  height="180"  style="display:none">
+							 </iframe>
+					     	</div>
+					     	
+							<!--城市信用监测 -->
+							 <div id="csxyjc" style="display:none;min-height:210px;"  class="portlet-body">
+							 <iframe name="left" id="rightMain" src="http://3w.nbcredit.gov.cn/col/col108/index.html" frameborder="false" 
+							 scrolling="no" style="border:none;" width="100%"  height="180"  style="display:none">
+							 </iframe>
+					     	</div>
+					     		
+					</div>
+				</div>
+				
+			</div>
+			
+			
+			
+			<%-- <div class="row">
+				<div class="col-lg-12 col-md-12 col-sm-6 col-xs-12">
+					<!-- BEGIN REGIONAL STATS PORTLET-->
+					<div class="portlet light ">
+						<div class="portlet-title">
+							<div class="caption caption-md">
+								<i class="icon-bar-chart theme-font-color hide"></i>
+								<span class="caption-subject theme-font-color bold uppercase">Regional Stats</span>
+							</div>
+							<div class="actions">
+								<a class="btn btn-circle btn-icon-only btn-default" href="javascript:;">
+								<i class="icon-cloud-upload"></i>
+								</a>
+								<a class="btn btn-circle btn-icon-only btn-default" href="javascript:;">
+								<i class="icon-wrench"></i>
+								</a>
+								<a class="btn btn-circle btn-icon-only btn-default fullscreen" href="javascript:;">
+								</a>
+								<a class="btn btn-circle btn-icon-only btn-default" href="javascript:;">
+								<i class="icon-trash"></i>
+								</a>
+							</div>
+						</div>
+						<div class="portlet-body">
+							<div id="region_statistics_loading">
+								<img src="${rs}/admin/layout/img/loading.gif" alt="loading"/>
+							</div>
+							<div id="region_statistics_content" class="display-none">
+								<div class="btn-toolbar margin-bottom-10">
+									<div class="btn-group btn-group-circle" data-toggle="buttons">
+										<a href="" class="btn grey-salsa btn-sm active">
+										Users </a>
+										<a href="" class="btn grey-salsa btn-sm">
+										Orders </a>
+									</div>
+									<div class="btn-group pull-right">
+										<a href="" class="btn btn-circle grey-salsa btn-sm dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+										Select Region <span class="fa fa-angle-down">
+										</span>
+										</a>
+										<ul class="dropdown-menu pull-right">
+											<li>
+												<a href="javascript:;" id="regional_stat_world">
+												World </a>
+											</li>
+											<li>
+												<a href="javascript:;" id="regional_stat_usa">
+												USA </a>
+											</li>
+											<li>
+												<a href="javascript:;" id="regional_stat_europe">
+												Europe </a>
+											</li>
+											<li>
+												<a href="javascript:;" id="regional_stat_russia">
+												Russia </a>
+											</li>
+											<li>
+												<a href="javascript:;" id="regional_stat_germany">
+												Germany </a>
+											</li>
+										</ul>
+									</div>
+								</div>
+								<div id="vmap_world" class="vmaps display-none">
+								</div>
+								<div id="vmap_usa" class="vmaps display-none">
+								</div>
+								<div id="vmap_europe" class="vmaps display-none">
+								</div>
+								<div id="vmap_russia" class="vmaps display-none">
+								</div>
+								<div id="vmap_germany" class="vmaps display-none">
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- END REGIONAL STATS PORTLET-->
+				</div>
+				
+			</div> --%>
+<!-- 			<div id="main" style="height: 400px; width: 80%"></div> -->
+
+</rapid:override>
+
+<rapid:override name="script">
+
+<script src="${rs}/global/plugins/morris/morris.min.js" type="text/javascript"></script>
+<script src="${rs}/admin/pages/scripts/index3.js" type="text/javascript"></script>
+<script src="${rs}/js/plugins/jqgrid/i18n/grid.locale-cn.js"></script>
+<script src="${rs}/js/plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="${rs}/js/plugins/jquery-ui/jquery-ui.min.js"></script>
+<script src="${rs}/js/plugins/layer/layer.js"></script>
+<script src="${ctx}/resources/dist/echarts-all.js"></script>
+<script src="${rs}/js/plugins/validate/messages_zh.min.js"></script>
+<script>
+
+function getDt(id){
+	 
+	if(id=='gjdt'){
+		
+		 $("#ssdtlm").removeClass("on");
+		 $("#nbdtlm").removeClass("on");
+		 $("#xsqdtlm").removeClass("on");
+		 $("#gjdtlm").removeClass("on");
+		 
+		 $("#gjdtlm").addClass("on"); 
+		 
+		 $("#gjdt").css('display','none'); 
+		 $("#ssdt").css('display','none'); 
+		 $("#nbdt").css('display','none'); 
+		 $("#xsqdt").css('display','none'); 
+		 
+		 $("#gjdt").css('display','block'); 
+		  
+	}else if(id=='ssdt'){
+		 $("#ssdtlm").removeClass("on");
+		 $("#nbdtlm").removeClass("on");
+		 $("#xsqdtlm").removeClass("on");
+		 $("#gjdtlm").removeClass("on");
+		 
+		 $("#ssdtlm").addClass("on"); 
+		 
+		 $("#gjdt").css('display','none'); 
+		 $("#ssdt").css('display','none'); 
+		 $("#nbdt").css('display','none'); 
+		 $("#xsqdt").css('display','none'); 
+		 
+		 $("#ssdt").css('display','block');
+	}else if(id=="nbdt"){
+		 $("#ssdtlm").removeClass("on");
+		 $("#nbdtlm").removeClass("on");
+		 $("#xsqdtlm").removeClass("on");
+		 $("#gjdtlm").removeClass("on");
+		 
+		 $("#nbdtlm").addClass("on"); 
+		 
+		 $("#gjdt").css('display','none'); 
+		 $("#ssdt").css('display','none'); 
+		 $("#nbdt").css('display','none'); 
+		 $("#xsqdt").css('display','none'); 
+		 
+		 $("#nbdt").css('display','block');
+	}else if(id=="xsqdt"){
+		 $("#ssdtlm").removeClass("on");
+		 $("#nbdtlm").removeClass("on");
+		 $("#xsqdtlm").removeClass("on");
+		 $("#gjdtlm").removeClass("on");
+		 
+		 $("#xsqdtlm").addClass("on"); 
+		 
+		 $("#gjdt").css('display','none'); 
+		 $("#ssdt").css('display','none'); 
+		 $("#nbdt").css('display','none'); 
+		 $("#xsqdt").css('display','none'); 
+		 
+		 $("#xsqdt").css('display','block');
+	}else if(id=='dxal'){
+		window.location.href="${ctx}/Initpage/todxallist?dxal=sxjl";
+	}
+}
+
+
+function getTb(id){
+	
+// 	if(id=='xxgj'){
+// 		 $("#xxgjlm").removeClass("on");
+// 		 $("#lhcjlm").removeClass("on");
+// 		 $("#ptyxlm").removeClass("on");
+// 		 $("#csxyjclm").removeClass("on");
+		 
+// 		 $("#xxgjlm").addClass("on"); 
+		 
+// 		 $("#xxgj").css('display','none'); 
+// 		 $("#lhcj").css('display','none'); 
+// 		 $("#ptyx").css('display','none'); 
+// 		 $("#csxygj").css('display','none'); 
+		 
+// 		 $("#xxgj").css('display','block');
+// 	}else 
+		if(id=='lhcj'){
+// 		 $("#xxgjlm").removeClass("on");
+		 $("#lhcjlm").removeClass("on");
+		 $("#ptyxlm").removeClass("on");
+		 $("#csxyjclm").removeClass("on");
+		 
+		 $("#lhcjlm").addClass("on"); 
+		 
+// 		 $("#xxgj").css('display','none'); 
+		 $("#lhcj").css('display','none'); 
+		 $("#ptyx").css('display','none'); 
+		 $("#csxyjc").css('display','none'); 
+		 
+		 $("#lhcj").css('display','block');
+	}else if(id=='ptyx'){
+// 		 $("#xxgjlm").removeClass("on");
+		 $("#lhcjlm").removeClass("on");
+		 $("#ptyxlm").removeClass("on");
+		 $("#csxyjclm").removeClass("on");
+		 
+		 $("#ptyxlm").addClass("on"); 
+		 
+// 		 $("#xxgj").css('display','none'); 
+		 $("#lhcj").css('display','none'); 
+		 $("#ptyx").css('display','none'); 
+		 $("#csxyjc").css('display','none'); 
+		 
+		 $("#ptyx").css('display','block');
+	}else if(id=='csxyjc'){
+// 		 $("#xxgjlm").removeClass("on");
+		 $("#lhcjlm").removeClass("on");
+		 $("#ptyxlm").removeClass("on");
+		 $("#csxyjclm").removeClass("on");
+		 
+		 $("#csxyjclm").addClass("on"); 
+		 
+// 		 $("#xxgj").css('display','none'); 
+		 $("#lhcj").css('display','none'); 
+		 $("#ptyx").css('display','none'); 
+		 $("#csxyjc").css('display','none'); 
+		 
+		 $("#csxyjc").css('display','block');
+	}
+	
+	
+}
+$(document).ready(function () {
+
+	$.ajax({
+		type:"post",
+		url:'${ctx}/Initpage/getBMID',
+		dataType:"json",
+		data:{},
+		success:function(data){
+			if(data.BMID=="55636fa1ea164673ad41b23535e4daca"){
+				$("#gg").attr("href","${ctx}/notices/list");
+				$.ajax({
+					type:"post",
+					url:'${ctx}/Initpage/getZXZXCount',
+					dataType:"json",
+					data:{},
+					success:function(data){
+						$("#bmzx").text("在线咨询");
+						if(data==null||data==''){
+							$("#zxdata").append("<span>无权限</span>");
+						}else{ 
+							//$("#zxzx").attr('href','${ctx}/zx/list');
+							$("#zxzx").attr('onclick','zx_submit()');
+							$("#znxx").text("待处理");
+							$("#zxdata").append("<span>"+data+"</span>条");
+						}
+					},
+					error:function(){
+					}
+				});
+			} else {
+				$("#gg").attr("href","${ctx}/notices/zflist");
+				$.ajax({
+					type:"post",
+					url:'${ctx}/Initpage/getBMData',
+					dataType:"json",
+					data:{},
+					success:function(data){
+						$("#bmzx").text("部门数据信息");
+						if(data==0){
+							$("#zxdata").append("<span>无权限</span>");
+						}else{
+							
+							$("#znxx").text("数据条数");
+							//$("#zxzx").attr('onclick','zx_submit()');
+							$("#zxdata").append("<span>"+data+"</span>条");
+						}
+						
+					},
+					error:function(){
+					}
+				});
+				
+			}
+		}
+	});
+	$.ajax({
+		type:"post",
+		url:'${ctx}/Initpage/getYytjs',
+		dataType:"json",
+		data:{},
+		success:function(data){
+			 
+			if(data.bmid==""||data.bmid=="undefined"||data.bmid==null){ 
+				
+				
+				
+				if(data.yytjs==null){
+// 					$("#hiddengx").attr("href","#");
+// 					$("#zxyy").append("[信用异议处理]<span>无权限</span>");
+					$("#zxyy").append(" ");
+					$("#hiddengx").attr("href","#");
+// 					$("#zxyy").append("待处理<span>0</span>条");
+				}
+				else{
+// 					$("#hiddengx").attr("href","${ctx}/shares/applist"); 
+					$("#yycl").attr('onclick','yycl_submit(\''+data.YYTYPE+'\')'); 		 
+// 					[异议处理]<span>(6)</span><span class="fontv">条信息未处理</span>		
+					$("#zxyy").append("[信用异议处理]<span>("+data.yytjs+")</span><span class='fontv'>条信息未处理</span>");
+				}
+			} else { 
+				if(data.yytjs==null){
+// 					$("#bmyy").append("[信用异议处理]<span>无权限</span>");
+					$("#bmyy").append(" ");
+				}else{
+ 					$("#yycl").attr('onclick','yycl_submit(\'1\')'); 
+					$("#bmyy").append("[信用异议处理]<span>("+data.yytjs+")</span><span class='fontv'>条信息未处理</span>");
+				}
+			}
+		}
+	});
+	$.ajax({
+		type:"post",
+		url:'${ctx}/Initpage/bquery',
+		dataType:"json",
+		data:{},
+		success:function(data){
+			
+//		 	<li><span>2016-06-13</span><a href="#">· &nbsp;&nbsp;我市城市信用综合指数在全国36个主要城市</a>	 </li>
+// 			var rowStr = "<tr><th>通知公告名称</th><th>发布时间</th></tr>";
+			var rowStr ="";
+			for (var i=0; i<data.length; i++){
+				var rowObj = data[i];
+				if(i%5==0){
+					rowStr += "<li>";
+				} else if(i%5==1){
+					rowStr += "<li>";
+				} else if(i%5==2){
+					rowStr += "<li>";
+				} else if(i%5==3){
+					rowStr += "<li>";
+				} else if(i%5==4){
+					rowStr += "<li>";
+				}
+				var fbsj = " ";
+				if(rowObj.FBSJ!="undefined" && rowObj.FBSJ!=null){
+					fbsj = rowObj.FBSJ.substr(5,10);
+				}
+				//alert(rowObj.TZGGMC.length);
+				var TZGGMC ="";
+				//通知公告留几个字下面的数据就是几，否则会导致...显示不准确
+				if(rowObj.TZGGMC.length > 17){
+					TZGGMC = rowObj.TZGGMC.substr(0,17)+"...";
+				}else{
+					TZGGMC = rowObj.TZGGMC.substr(0,17);
+				}
+				
+				rowStr += "<span>"+fbsj+"</span><a class='noticeDetail' id='"+rowObj.ID+"'>&bull;&nbsp;&nbsp;"+TZGGMC+"</a></li>";
+// 				rowStr += "<td width='70%'><a class='noticeDetail' id='"+rowObj.ID+"'>"+rowObj.TZGGMC+"</a></td>" + 
+// 								"<td width='30%'>"+fbsj+"</td>";
+// 				rowStr += "</tr>";
+			}
+			$("#tzgg").append(rowStr);
+		    $(window).bind('resize', function () {
+		        var width = $('.jqGrid_wrapper').width();
+		        $('#tzgg').setGridWidth(width);
+		    });
+		}
+	});
+
+	$.ajax({
+		type:"post",
+		url:'${ctx}/Initpage/getStationInfo',
+		dataType:"json",
+		data:{},
+		success:function(data){
+			$("#zntitle").text("消息管理");
+			if(data==null||data==''){
+// 				$("#hiddenxx").attr("href","#");
+// 				$("#zndata").append("<span>无权限</span>");
+				$("#zndata").append("[站内消息]<span>(0)</span><span class='fontv'>条未查看</span>");
+			}else{
+				$("#zndata").append("[站内消息]<span>("+data+")</span><span class='fontv'>条未查看</span>");
+			}
+		}
+	});
+	
+	$.ajax({
+		type:"post",
+		url:'${ctx}/Initpage/getShareCount',
+		dataType:"json",
+		data:{},
+		success:function(data){
+			$("#gxtitle").text("共享审核");
+			if(data.ISYX=='N'){
+				$("#hiddengx").attr("href","#");
+// 				$("#scdata").append("[共享审核]<span>无权限</span>");
+				$("#scdata").append("");
+			}else if(data.ISYX=='BM'){
+//				$("#hiddengx").attr("href","${ctx}/shares/bApplylist");
+
+				$("#hiddengx").attr('onclick','gxml_submit(\'1\')'); 
+				$("#scdata").append("[共享审核]<span>("+data.NUM+")</span><span class='fontv'>条信息未处理</span>");
+			}else if(data.ISYX=='ADMIN'){
+//				$("#hiddengx").attr("href","${ctx}/shares/applist");
+ 	 
+				$("#hiddengx").attr('onclick','gxml_submit(\''+data.gxtype+'\')'); 
+				$("#scdata").append("[共享审核]<span>("+data.NUM+")</span><span class='fontv'>条信息未处理</span>");
+			}else{
+				$("#hiddengx").attr("href","#");
+// 				$("#scdata").append("<span>[共享审核]无权限</span>");
+				$("#scdata").append("");
+			}
+		}
+	});
+	
+	$.ajax({
+		type:"post",
+		url:'${ctx}/Initpage/getBMData',
+		dataType:"json",
+		data:{},
+		success:function(data){
+			 
+				$("#bmdata").append("<span>"+data+"</span>条"); 
+		}
+	});
+	
+	$(document).on("click",".noticeDetail",function(){
+		 var id=$(this).attr("id");
+		 window.location.href="${ctx}/notices/toShowBumenNotice?ID="+id;
+	});
+	
+	
+// 	$.ajax({
+// 		type:"post",
+// 		url:'${ctx}/Initpage/getBmsjtj',
+// 		dataType:"json",
+// 		data:{},
+// 		success:function(data){
+// 			var xList = new Array();
+// 			var  dataList = new Array();
+// 			for (var i=0; i<data.length; i++){
+// 				var obj = data[i];
+// 				xList.push(obj.RKRQ);
+// 				dataList.push(obj.TOTAL);
+// 			}
+// 			initLineCharts(xList,dataList);
+// 		}
+// 	});
+});
+
+//统计分析图标 之折线图  ： 数据量  查询量  目录量
+function initLineCharts(xList,dataList) {
+	var myChart = echarts.init(document.getElementById('main'));
+	option = {
+		title : {
+			text : '数据统计分析图表',
+			subtext : ''
+		},
+		tooltip : {
+			trigger : 'axis'
+		},
+		legend : {
+			data : [ '数据总量' ]
+		},
+		toolbox : {
+			show : true,
+			feature : {
+				mark : {
+					show : true
+				},
+				dataView : {
+					show : true,
+					readOnly : false
+				},
+				magicType : {
+					show : true,
+					type : [ 'line', 'bar' ]
+				},
+				restore : {
+					show : true
+				},
+				saveAsImage : {
+					show : true
+				}
+			}
+		},
+		calculable : true,
+		xAxis : [ {
+			type : 'category',
+			boundaryGap : false,
+			data : xList
+		} ],
+		yAxis : [ {
+			type : 'value',
+			axisLabel : {
+				formatter : '{value} '
+			}
+		} ],
+		series : [ {
+			name : '数据总量',
+			type : 'line',
+			data : dataList,
+		}]
+	};
+	myChart.setOption(option);
+}
+function yycl_submit(yytype){
+	
+	 
+	
+		if("<%=request.getSession().getAttribute("BMID")%>"=="55636fa1ea164673ad41b23535e4daca"){
+//			 if(<%=request.getSession().getAttribute("S_Y")%>!=1){ 
+//				casubmit('/yycl/getInitAdmin');
+//			}else{ 
+//				casubmit('/yycl/getInitAdmin');
+//				//$("#yycl").attr('href','${ctx}/yycl/getInitAdmin'); 
+//			}  
+			if(yytype=="XX"){
+				$("#yycl").attr('href','${ctx}/yycl/getInitAdmin?yytype=XX'); 
+			}
+			if(yytype=="BM"){
+				$("#yycl").attr('href','${ctx}/yycl/getInitAdmin?yytype=BM'); 
+			}
+			if(yytype=="ZX"){
+				$("#yycl").attr('href','${ctx}/yycl/getInitAdmin?yytype=ZX'); 
+			}
+			
+		}else{
+//			if(<%=request.getSession().getAttribute("S_Y")%>!=1){ 
+//				casubmit('/yycl/getInit');
+//			}else{ 
+//				casubmit('/yycl/getInit');
+//				//$("#yycl").attr('href','${ctx}/yycl/getInit');
+//			} 		
+			$("#yycl").attr('href','${ctx}/yycl/getInit');
+		}
+	}
+function gxml_submit(gxtype){ 
+	if("<%=request.getSession().getAttribute("BMID")%>"=="55636fa1ea164673ad41b23535e4daca"){
+//		if(<%=request.getSession().getAttribute("S_Y")%>!=1){ 
+//			casubmit('/shares/applist');
+//		}else{  
+//			window.location.href = "${ctx}/shares/applist";
+//		}
+ 
+if(gxtype=="xxy"){
+	window.location.href = "${ctx}/shares/applist?cltype=xxy";
+}
+if(gxtype=="bmld"){
+	window.location.href = "${ctx}/shares/applist?cltype=bmld";
+}
+if(gxtype=="zxld"){
+	window.location.href = "${ctx}/shares/applist?cltype=zxld";
+}
+
+		
+	}else{
+//		if(<%=request.getSession().getAttribute("S_Y")%>!=1){ 
+//			casubmit('/shares/bApplylist');
+//		}else{  
+//			window.location.href = "${ctx}/shares/bApplylist";
+//		}	
+		window.location.href = "${ctx}/shares/bApplylist";
+	}
+}	 
+function zx_submit(){ 
+	if("<%=request.getSession().getAttribute("BMID")%>"=="55636fa1ea164673ad41b23535e4daca"){
+//		if(<%=request.getSession().getAttribute("S_Y")%>!=1){ 
+//			casubmit('/zx/list');
+//		}else{  
+//			window.location.href = "${ctx}/zx/list";
+//		}
+		window.location.href = "${ctx}/zx/list";
+	}else{
+//		if(<%=request.getSession().getAttribute("S_Y")%>!=1){ 
+//			casubmit('/shares/bApplylist');
+//		}else{  
+//			window.location.href = "${ctx}/shares/bApplylist";
+//		}		
+		window.location.href = "${ctx}/shares/bApplylist";
+	}
+}
+
+// function casubmit(url){
+	 
+	 
+<%-- 		 var xlh =cazs_select('<%=request.getSession().getAttribute("S_CABZF")%>');  --%>
+// 		 if(xlh!="error"){
+// 		 $.ajax({
+// 				url : '${ctx}/testca',
+// 				type : "POST",
+// 				data : {
+// 					"passport" : xlh 
+// 				},
+// 				dataType : "json"
+// 			}).done(function(resultData, ss) {
+// 				if(resultData.SFYX=='Y'){
+// 					window.location.href = "${ctx}"+url;
+// 				}else{
+// 					layer.msg('无此CA用户。');
+// 				}
+// 			}).fail(function(jqXHR, textStatus, errirThrown) {
+// 				layer.msg('数据加载失败,请稍后重试');
+// 			});
+	 
+// 		 }else{
+// 			 layer.msg("请确认安装数字证书客户端。");
+// 		 }
+	 
+	
+// }
+</script>
+</rapid:override>
+ 
+<c:if test='${sessionScope.loginname!="hzh_fgw" }'>
+<%@ include file="template/base.jsp"  %>
+</c:if>
+<c:if test='${sessionScope.loginname=="hzh_fgw" }'>
+<%@ include file="template/basenomenu.jsp"  %>
+</c:if>

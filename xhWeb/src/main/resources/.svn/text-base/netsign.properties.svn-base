@@ -1,0 +1,125 @@
+#服务器
+##以下设置针对java版本的netsign 1.8
+##---------------------------------------------------------------------
+##pfx证书张数 工行不用，不用修改
+#pfxindexs=1
+##pfx证书路径,用于签名和解密 工行不用，不用修改
+#pfxdirpath=/home/321/cert/store/signstore
+##pfx证书名和密码
+#pfx0=5year.pfx
+#passwordpfx0=11111111
+##配置签名证书
+#
+##---------------------------------------------------------------------
+##加密证书路径 工行不用，但是必须随便填一个存在的目录
+#enccert=/home/321/tmp/back
+##---------------------------------------------------------------------
+##信任域的个数
+#trustindexs=3
+##根证书的路径 根证书必须是der编码
+#truststore0=/home/321/cert/rootcert/zjca.cer
+#truststore1=/home/321/cert/rootcert/ROOTCA(SM2).cer
+#truststore2=/home/321/cert/rootcert/ZJCAOCA1.cer
+##（truststore1对应pfx1，即e生产系统企业证书上级证书，此处为CFCA Operation CA.cer，此证书可以将12e.pfx导入IE后再导出得到）
+##crl存放目录
+#crldir0=/home/321/Temp/back
+#crldir1=/home/321/Temp/back
+#crldir2=/home/321/Temp/back
+##crldir1=d:/TEMP/back
+##是否按发布点验证: 0=是,1=不是
+#cldpflag0=1
+#cldpflag1=1
+#cldpflag2=1
+##cldpflag1=0
+##检查CRL文件的时间间隔, 单位:毫秒,请填写正数; 请不要配置超过4294967295数字
+#crldownloadinterval0=60000
+#crldownloadinterval1=60000
+#crldownloadinterval2=60000
+#sm2signid=1234567812345678
+#sm2certid=1234567812345678
+##---------------------------------------------------------------------
+##日志文件
+#logfile=/home/321/Temp/netsignlog.log
+##---------------------------------------------------------------------
+#
+#
+#
+##摘要算法配置
+##RSA密钥长度<=1024时的摘要算法
+#mdalgrsa1024=SHA1
+##RSA密钥长度>1024时的摘要算法
+#mdalgrsa2048=SHA256
+##SM2签名的摘要算法
+#mdalgsm2=SM3
+#
+##P7包是否包含证书链
+#withcertchain=true
+#
+##对称加密算法，支持RC4,DES,3DES
+#encryptalg=DES
+
+
+
+
+
+#本机器
+
+#以下设置针对java版本的netsign 1.8
+#---------------------------------------------------------------------
+#pfx证书张数 工行不用，不用修改
+pfxindexs=1
+#pfx证书路径,用于签名和解密 工行不用，不用修改
+pfxdirpath=d:/home/321/cert/store/signstore
+#pfx证书名和密码
+pfx0=5year.pfx
+passwordpfx0=11111111
+#配置签名证书
+
+#---------------------------------------------------------------------
+#加密证书路径 工行不用，但是必须随便填一个存在的目录
+enccert=d:/home/321/tmp/back
+#---------------------------------------------------------------------
+#信任域的个数
+trustindexs=3
+#根证书的路径 根证书必须是der编码
+truststore0=d:/home/321/cert/rootcert/zjca.cer
+truststore1=d:/home/321/cert/rootcert/ROOTCA(SM2).cer
+truststore2=d:/home/321/cert/rootcert/ZJCAOCA1.cer
+#（truststore1对应pfx1，即e生产系统企业证书上级证书，此处为CFCA Operation CA.cer，此证书可以将12e.pfx导入IE后再导出得到）
+#crl存放目录
+crldir0=d:/home/321/Temp/back
+crldir1=d:/home/321/Temp/back
+crldir2=d:/home/321/Temp/back
+#crldir1=d:/TEMP/back
+#是否按发布点验证: 0=是,1=不是
+cldpflag0=1
+cldpflag1=1
+cldpflag2=1
+#cldpflag1=0
+#检查CRL文件的时间间隔, 单位:毫秒,请填写正数; 请不要配置超过4294967295数字
+crldownloadinterval0=60000
+crldownloadinterval1=60000
+crldownloadinterval2=60000
+sm2signid=1234567812345678
+sm2certid=1234567812345678
+#---------------------------------------------------------------------
+#日志文件
+logfile=d:/home/321/Temp/netsignlog.log
+#---------------------------------------------------------------------
+
+
+
+#摘要算法配置
+#RSA密钥长度<=1024时的摘要算法
+mdalgrsa1024=SHA1
+#RSA密钥长度>1024时的摘要算法
+mdalgrsa2048=SHA256
+#SM2签名的摘要算法
+mdalgsm2=SM3
+
+#P7包是否包含证书链
+withcertchain=true
+
+#对称加密算法，支持RC4,DES,3DES
+encryptalg=DES
+

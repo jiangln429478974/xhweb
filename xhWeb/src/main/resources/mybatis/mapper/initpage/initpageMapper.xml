@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cssnb.initpage.dao.InitpageMapper">
+	<select id="getBMID" parameterType="String" resultType="java.lang.String">
+		select BMID from XT_YHB where YHM=#{YHM}
+	</select>
+	
+	<select id="getYHID" parameterType="String" resultType="java.lang.String">
+		select ID from XT_YHB where YHM=#{YHM}
+	</select>
+	
+	<select id="checkItem" parameterType="String" resultType="java.util.HashMap">
+		SELECT B.GNCDID FROM XT_YHJSB A,XT_GNCDSQB B WHERE A.JSID=B.JSID AND A.YHID=#{YHID}
+	</select>
+		
+	<select id="getShareApplyShenheList" resultType="java.lang.String"  parameterType="map">
+	select distinct count(*) from xt_gxsqbz a,XT_BMB b,XT_YHB c,(select a.* from xt_gxsqb a,xt_gxmlb b where a.BMID=#{BMD} and a.SJBID = b.id and b.KFDJ = '1') t 
+	where a.ID = t.UUID and t.USERID = c.ID and c.BMID = b.ID and a.XCZT='1'
+  	<if test="BMID!=null and BMID!=''">and c.BMID=#{BMID}</if>
+  	<if test="fbsj_start !=null and fbsj_start!='' and fbsj_end!=null and fbsj_end!=''">and to_char(a.RKRQ,'yyyy-mm-dd hh24:mi:ss') between #{fbsj_start} and #{fbsj_end}</if>
+  	<if test="SHZT!=null and SHZT!=''">and t.SHZT=#{SHZT}</if>
+  	order by a.RKRQ desc
+	</select> 
+	<select id="getStationInfo" parameterType="String" resultType="java.lang.String">
+	select count(*)
+   from  XXTZXXB a 
+   left  join XT_YHB b  on  a.JSRID = b.ID  join   XT_BMB c on b.BMID = c.ID
+   left  join XT_YHB m  on  m.YHM = a.FSR join  XT_BMB n on m.BMID = n.ID
+  where  b.YHM = #{YHM} and ckzt='0'
+	</select>
+	
+	<select id="getZXZXCount" resultType="java.lang.String">
+	select count(*) from XT_ZX where CLZT=0
+	</select>
+	 
+	
+	<select id="getZXShareCount" resultType="java.lang.String" parameterType="map">
+ select count(*) from ( 
+select distinct b.id  from xt_gxsqb a,xt_gxsqbz b where  
+  b.id = a.uuid     
+<if test="gxtype =='xxy'">
+and  b.dj  in('xxy','default')
+and (( exists(
+select 1 from xt_gxmlb b where a.sjbid=b.id and b.kfdj='1') and a.shzt=3)
+or ( exists(
+select 1 from xt_gxmlb b where a.sjbid=b.id and b.kfdj='2' and  bmliyou is null ) and a.shzt=1)
+) 
+</if>
+<if test="gxtype =='zxld'">
+  and  b.dj = 'xxy' and  a.shzt in ('2','4') and bmliyou is null and zxzrliyou is null
+</if>
+)
+	</select>
+	
+	<select id="getShareCount" resultType="java.lang.String" parameterType="String">
+	select count( distinct uuid ) from xt_gxsqb a where bmid=#{BMD} and  shzt=1 and 
+exists(
+select 1 from xt_gxmlb b where a.sjbid=b.id and b.kfdj='1') 
+	
+	</select>
+	
+	<select id="getBMData" resultType="java.lang.String" parameterType="String">
+	select nvl(sum(total),0) from Xt_Tj_Bmb where BMID=#{BMID}
+	</select>
+	
+	<select id="getZXData" resultType="java.lang.String">
+	select sum(total) from XT_TJ_BMB
+	</select>
+	
+	<!-- 根据检索条件查询相应的部门通知公告 -->
+	<select id="getBmggList" resultType="java.util.HashMap"  parameterType="java.util.HashMap">
+		select * from (select (select bmmc from xt_bmb bm where bm.id=(select bmid from xt_yhb y where y.id=a.userid )) fsbm,
+		a.ID,a.TZGGMC,b.BMMC,to_char(a.FBSJ,'yyyy-mm-dd') FBSJ,to_char(a.RKRQ,'yyyy-mm-dd hh24:mi:ss') RKRQ from XT_TZGGB a,XT_TZGGB_BMB b,XT_BMB c
+		where c.BMMC = b.BMMC and b.TID = a.ID and a.FBSJ is not null
+		<if test="BMID!=null and BMID!=''">
+			and c.ID = #{BMID}  and a.FBZT = '1'
+		</if>
+	  	order by a.RKRQ desc) where rownum&lt;=5 
+	</select>
+	
+	<select id="getYytjs" resultType="int" parameterType="java.util.HashMap">
+		<!-- select sum(cnt) from (
+			select count(*) cnt from xt_zrryysqb a ,xt_yycljgb b
+			where a.id=b.yyclhzbh and (fbzt!='1' or fbzt is null)
+				<if test="bmid!=null and bmid!=''">and b.dqclbmid=#{bmid} </if>
+			union all
+			select count(*) cnt from xt_fryysqb a ,xt_yycljgb b
+			where a.id=b.yyclhzbh and (fbzt!='1' or fbzt is null) 
+				<if test="bmid!=null and bmid!=''">and b.dqclbmid=#{bmid} </if>
+		) -->
+		
+		SELECT SUM(CNT) FROM (
+		select count(*) CNT from xt_zrryysqb t  
+			where 1=1
+			<if test="YYTYPE=='XX'"> <!-- 初审 -->
+			<if test="bmid==null or bmid==''"> and exists  (select 1  from XT_YYCLJGB a where a.YYCLHZBH=t.ID and (a.zt = '1' or a.zt='3' or a.zt='5')) </if>
+			 </if>
+			<if test="YYTYPE=='BM'"> <!-- 复审 -->
+			<if test="bmid==null or bmid==''"> and exists  (select 1  from XT_YYCLJGB a where a.YYCLHZBH=t.ID and a.zt = '7' ) </if>
+			 </if>
+			 <if test="YYTYPE=='ZX'"> <!-- 终审 -->
+			<if test="bmid==null or bmid==''"> and exists  (select 1  from XT_YYCLJGB a where a.YYCLHZBH=t.ID and  a.zt = '8'  ) </if>
+			 </if>
+			<if test="bmid!=null and bmid!=''"> and exists  (select 1  from XT_YYCLJGB a where a.YYCLHZBH=t.ID and (a.zt = '2' or a.zt='5' or a.zt='6') and a.bmid=#{bmid} ) </if>
+	
+	UNION ALL 
+	
+	select count(*) CNT from xt_fryysqb t  
+			where 1=1
+			<if test="YYTYPE=='XX'"> <!-- 初审 -->
+			<if test="bmid==null or bmid==''"> and exists  (select 1  from XT_YYCLJGB a where a.YYCLHZBH=t.ID and (a.zt = '1' or a.zt='3' or a.zt='5')) </if>
+			 </if>
+			<if test="YYTYPE=='BM'"> <!-- 复审 -->
+			<if test="bmid==null or bmid==''"> and exists  (select 1  from XT_YYCLJGB a where a.YYCLHZBH=t.ID and a.zt = '7' ) </if>
+			 </if>
+			 <if test="YYTYPE=='ZX'"> <!-- 终审 -->
+			<if test="bmid==null or bmid==''"> and exists  (select 1  from XT_YYCLJGB a where a.YYCLHZBH=t.ID and  a.zt = '8'  ) </if>
+			 </if>
+			<if test="bmid!=null and bmid!=''"> and exists  (select 1  from XT_YYCLJGB a where a.YYCLHZBH=t.ID and (a.zt = '2' or a.zt='5' or a.zt='6') and a.bmid=#{bmid} ) </if>
+	
+	)
+	</select>
+	
+	<select id="getBmsjtj" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+		<if test="bmid!=null and bmid!=''">
+			select to_char(t.rkrq,'yyyy-mm-dd') rkrq, sum(total) total from xt_tj_bmb t where t.bmid=#{bmid} group by t.bmid,to_char(t.rkrq,'yyyy-mm-dd')order by rkrq
+		</if>
+		<if test="bmid==null or bmid==''">
+			select to_char(t.rkrq,'yyyy-mm-dd') rkrq, sum(total) total from xt_tj_bmb t group by to_char(t.rkrq,'yyyy-mm-dd') order by rkrq
+		</if>
+	</select>
+	
+	<!-- 
+	<select id="noShow" resultType="string" parameterType="string">
+       update  xt_yhb set syts='1' where  id=#{yhid}  
+	</select>
+	
+	<select id="showOrNot" resultType="string" parameterType="string">
+       select  syts  from xt_yhb  where  id=#{yhid}  
+	</select>
+	-->
+	
+	<select id="getlhjcTJ" resultType="map" parameterType="map">
+	select 
+	(select count(*) from cj_gs_aj a<!-- , cj_gs_filelog b -->
+ where <!-- a.wjuuid = b.uuid and --> a.p_num = (select count(*) from cj_gs_dx c where c.ajunid = a.ajbh
+    and c.xydm is null and c.zzjgdm is null and c.sfzh is not null) AND A.BJZT IS NULL) CJWFB,
+	(select count(*) from 
+  (  select a.ajbh as unid ,  a.unid as id ,a.xm as xm ,a.sfzh as sfzh , '' as cjdxlx ,
+  to_char(a.gbrq,'yyyy-MM-dd') as gbrq,  a.qxzt as qxzt, a.bdzt as bdzt  ,a.XGBJ as XGBJ 
+    from c##gck.cj_gs_aj a  
+    where
+   (a.qxzt in (44))
+         and a.sfzh is not null  
+           union 
+  select a.ajbh as unid ,b.unid as id ,b.xm as xm ,b.sfzh as sfzh ,b.cjdxlx as cjdxlx, 
+  to_char(a.gbrq,'yyyy-MM-dd') as gbrq, b.qxzt as qxzt  ,b.bdzt as bdzt  ,b.XGBJ as XGBJ 
+    from c##gck.cj_gs_aj a , c##gck.cj_gs_dx b  
+    where 
+    (b.qxzt in (44))
+          and a.ajbh=b.ajunid and b.hsbz is null
+     and b.sfzh is not null 
+   ) 
+     where
+        XGBJ!='1') cjwhs,
+<!-- 	(SELECT count(*) FROM JL_GS_AJNSR A,JL_DL B,XT_YHB C,XT_LOG_FTP D  -->
+<!-- 		where B.BMID=C.BMID AND A.BSRY=C.YHM AND D.UUID=A.WJID AND B.UUID='2222222' AND FBZT='W') jlwfb, -->
+(SELECT count(*) FROM JL_GS_AJNSR A where FBZT ='W') jlwfb,
+	(select  count(*) from c##gck.jl_dx WHERE QXZT in (3,44) and sfhs=1) jlwhs,
+	(select count(*) from 
+(SELECT uuid,mc,zjlx,zjhm,tssj,fbzt,gs+zf+hb hmd from(
+		select a.uuid,a.mc,a.zjlx,a.zjhm,to_char(a.tssj,'yyyy-mm-dd')TSSJ,a.fbzt,
+(select count(*) from cj_gs_dx e where a.mc=e.xm) gs,
+(select count(*) from cz_fr_zf_sx_wlxflwsywxx e where a.mc=e.mc) zf,
+(select count(*) from cj_hb_xyzt e where a.mc=e.mc) hb
+from jl_gs_ajnsr a
+   ))h
+   where h.hmd>0)jldcx
+	from dual
+	</select>
+</mapper>

@@ -1,0 +1,704 @@
+/**
+ * 
+ */
+package com.cssnb.baseframework.quickstart.web.common;
+
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException; 
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.cert.CertificateException; 
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.PropertyResourceBundle;
+import java.util.Random;
+import org.apache.commons.codec.binary.Base64; 
+import javax.annotation.Resource; 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import com.alibaba.fastjson.JSONObject;
+import com.cssnb.baseframework.core.domain.JqgridPage;
+import com.cssnb.baseframework.core.util.ParameterUtil; 
+import com.cssnb.baseframework.quickstart.shiro.MyFormAuthentication;
+/*import com.cssnb.ca.entity.CAUser;*/ 
+import com.cssnb.users.service.UsersService; 
+import com.cssnb.util.SystemLog;
+import com.cssnb.util.UUIDGenerator;
+import com.cssnb.util.UserPublic;
+import com.infosec.NetSignServer; 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory; 
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+ 
+
+/**
+ * SecurityController负责页面登录、登出
+ * 
+ * @author xuning
+ *
+ */
+@Controller
+public class SecurityController {
+	private static Logger logger = LoggerFactory.getLogger(SecurityController.class);
+	@Resource
+	private UsersService usersService;
+	
+	@Autowired
+	private RestTemplate rt;
+	
+	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	public String tologin(HttpServletRequest request) {
+	 
+		
+		Subject currentUser = SecurityUtils.getSubject();
+		if(currentUser != null)
+			currentUser.logout();
+		return "login";
+	}
+	@RequestMapping(value = "/nbzr", method = RequestMethod.GET)
+	public String tologin2(HttpServletRequest request) {
+		
+		
+		
+		Subject currentUser = SecurityUtils.getSubject();
+		if(currentUser != null)
+			currentUser.logout();
+		return "nbzr";
+	}
+	
+	@SystemLog(operationType="forward",operationName="进入信用动态列表页") 
+    @RequestMapping(value = "/head",method = RequestMethod.GET)
+    public String gethead(HttpServletRequest request){
+    	return "head/head";
+    }
+	
+	@SystemLog(operationType="forward",operationName="进入申请指南页面") 
+    @RequestMapping(value = "/shenqing",method = RequestMethod.GET)
+    public String getshenqing(HttpServletRequest request){
+    	return "shenqing/shenqing";
+    }
+	
+	@RequestMapping(value = "/logout")
+	@ResponseBody
+	public Map<String,Object> logout(HttpServletRequest request) {
+		Map<String,Object> result = new HashMap<String, Object>();
+		try {
+			Subject currentUser = SecurityUtils.getSubject();
+			currentUser.logout();
+			result.put("result", "success");
+		} catch (Exception e) {
+			result.put("result", "fail");
+			logger.error("退出失败！",e);
+		}
+		return result;
+	}
+	
+	@RequestMapping(value = "/relogin", method = RequestMethod.GET)
+	public String relogin() {
+		Subject currentUser = SecurityUtils.getSubject();
+		currentUser.logout();
+		logger.info("relogin!");
+		return "redirect:login";
+	}
+
+    @RequestMapping(value = "/loginPass3", method = RequestMethod.POST)
+    public Object login3(HttpServletRequest request,HttpServletResponse response,Model model) throws KeyStoreException, NoSuchProviderException, NoSuchAlgorithmException, CertificateException, IOException {
+//    	Subject subject = SecurityUtils.getSubject();//取得当前登录人
+//    
+//    	CAUser cas = new CAUser();
+//		try {
+//			request.setCharacterEncoding("gbk");
+//		} catch (UnsupportedEncodingException e) {
+//			e.printStackTrace();
+//		}
+//		Cookie[] cookies = request.getCookies();
+//		if(cookies!=null) {
+//			for (int i = 0; i < cookies.length; i++) {
+//				Cookie cookie = cookies[i];
+//				logger.info(cookie.getName()+" :::"+cookie.getValue());
+//				cas.getInfoMap().put(cookie.getName(),cookie.getValue());
+//			}   
+//		} 
+//    	 if(request.isSecure()){
+//    		 System.out.println("ss");
+//    	 }
+//		String cipherSuite = (String)request.getAttribute("javax.servlet.request.X509Certificate");
+//		  X509Certificate[] certs = (X509Certificate[])request.getAttribute("javax.servlet.request.X509Certificate");
+ 
+//    	String pass = request.getParameter("password");
+	   
+//    	String name = request.getParameter("username");
+//    	String Field;
+//    	KeyStore ks = KeyStore.getInstance("Windows-My", "SunMSCAPI"); 
+//    	ks.load(null, null); 
+//    	String ca="";
+//    	String break_s = "";
+//    	for (Enumeration iter = ks.aliases(); iter.hasMoreElements();) {
+//    		String alias = (String) iter.nextElement();
+//    		X509Certificate x509certificate= (X509Certificate)ks.getCertificate(alias);
+//    	    Field=x509certificate.getSubjectDN().getName();
+//    	    String  ca_1[] = Field.toString().split(","); 
+//    	    for(int i=0;i<ca_1.length;i++){
+//	       		 if("O=发改委信息中心".equals(ca_1[i].trim())){ 
+//	       			ca = ca_1[1].substring(ca_1[1].indexOf("=")+1);  
+//	       			break_s = "break";
+//	       			break;
+//	       		 } 	       	 
+//	         }
+//	         if(break_s.equals("break")){
+//	        	 break;
+//	         }
+//    	
+//    	}
+    	
+//    	MyFormAuthentication myFormAuthentication = new MyFormAuthentication();
+//    	try {
+//    		if(ca.trim()!=""){
+//        		if(pass.trim()!=""){
+//        			String ca_s = usersService.getCa(ca); 
+//        			String username = usersService.getUsernameByca(ca); 
+//        			if(ca_s!=null){
+//        				String userPass = usersService.vilidateByca(ca_s);
+//        				if(  pass.equals(userPass)){
+//        					subject.login(myFormAuthentication.createToken(request, response,username));
+//        				}else{
+//        					String message = "密码不正确，请重新输入。";
+//        					model.addAttribute("msg", message);
+//        					return "/login";
+//        				}
+//        			}else{
+//        				   String message ="无此CA用户。";
+//        				   model.addAttribute("message", message);
+//        				   return "/login";
+//        			}
+//        		}
+//        	}			
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			model.addAttribute(MyFormAuthentication.DEFAULT_ERROR_KEY_ATTRIBUTE_NAME, e.getMessage());
+//			return "/login";
+//		}
+    	Subject subject = SecurityUtils.getSubject();//取得当前登录人
+    	MyFormAuthentication myFormAuthentication = new MyFormAuthentication();
+    	Map<String,Object> paraMap = ParameterUtil.getFilterMap(request);
+    	String pass = request.getParameter("password");//密码
+    	String name = request.getParameter("username");//
+    	
+    	
+	     String ca =   (String)paraMap.get("passport");
+	     //使用企业ca 测试
+//	    int star = ss.indexOf("STREET=");//根据具体ca截取字符串
+//	    int end = ss.indexOf(", C=CN,"); 
+//	    if(star==-1 || end==-1){
+//	    	 String message ="无此CA用户。";
+//				   model.addAttribute("message", message);
+//				   System.out.println(model);
+//				   return "/login";
+//	    }
+//	    String ca  = ss.substring(star+7,end);
+//	    if (ca.equals("3302110000051043")){
+//	    	 ca = "wangl.fagw.sf.nb"; 
+//	    }
+	    //政府ca
+//	    int star = ss.indexOf("CN=");//根据具体ca截取字符串
+//	    int end = ss.indexOf(", OU="); 
+//	    if(star==-1 || end==-1 || star>=end){
+//	    	 String message ="无此CA用户。";
+//				   model.addAttribute("message", message);
+//				   System.out.println(model);
+//				   return "/login";
+//	    }
+//	    String ca  = ss.substring(star+3,end);
+	    
+	    
+   	 try{
+  		 if(ca.trim()!=""){
+  			List yh =  usersService.getCa(ca);
+  			if(yh.size()!=0){
+  			Map yhxx = (Map)yh.get(0);
+  			if(name.trim()!=""){
+  				if(pass.trim()!=""){
+  					String userName = usersService.getUserName(name);
+  					if(userName!=null){
+          				String userPass = usersService.vilidate(userName);
+          				if(name.equals(userName) && pass.equals(userPass)&&yhxx.get("CABZF").toString().equals(ca)&&yhxx.get("YHM").toString().equals(userName)&&yhxx.get("MM").toString().equals(userPass)){
+          					//subject.login(myFormAuthentication.createToken2(request, response));
+          					subject.login(myFormAuthentication.createToken(request, response,yhxx));
+          					Map param = new HashMap();
+          					String username =  UserPublic.login();
+          					param.put("YHM", username);
+          					List<HashMap<String, Object>> userList = usersService.getUserList(param);//获取登陆用户
+          					request.setAttribute("BMID", userList.get(0).get("BMID").toString());
+          				}else{
+          					String message = "用户名和密码不正确，请重新输入。";
+          					model.addAttribute("msg", message);
+          					System.out.println(model);
+          					return "/login";
+          				}
+  					}else{
+       				   String message ="无此用户。";
+       				   model.addAttribute("message", message);
+       				   System.out.println(model);
+       				   return "/login";
+  					}
+  					}
+  				}
+  			}else{
+  	  			String message ="无此CA用户。";
+ 			   model.addAttribute("message", message);
+ 			   System.out.println(model);
+ 			   return "/login";
+   		 }
+  		 }
+  		 }catch (Exception e) {
+		 			e.printStackTrace();
+		 			model.addAttribute(MyFormAuthentication.DEFAULT_ERROR_KEY_ATTRIBUTE_NAME, e.getMessage());
+		 			return "/login";
+		}
+       return "redirect:/index";
+    }
+    
+    
+    
+	
+    @RequestMapping(value = "/loginPass", method = RequestMethod.POST)
+    public Object login(HttpServletRequest request,HttpServletResponse response,Model model) {
+    	Subject subject = SecurityUtils.getSubject();//取得当前登录人
+    	String pass = request.getParameter("password");
+    	
+    	String name = request.getParameter("username");
+    	
+    	MyFormAuthentication myFormAuthentication = new MyFormAuthentication();
+    	try {
+    		if(name.trim()!=""){
+        		if(pass.trim()!=""){
+        			String userName = usersService.getUserName(name);
+        			if(userName!=null){
+        				String zt = usersService.zt(userName);
+        				if(zt.equals("1")){
+        					String userPass = usersService.vilidate(userName);
+            				if(name.equals(userName) && pass.equals(userPass)){
+            					subject.login(myFormAuthentication.createToken2(request, response));
+            					Map param = new HashMap();
+              					String username =  UserPublic.login();
+              					param.put("YHM", username);
+              					List<HashMap<String, Object>> userList = usersService.getUserList(param);//获取登陆用户
+              					HttpServletRequest requests = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+              					requests.getSession().setAttribute("BMID", userList.get(0).get("BMID").toString());
+              					requests.getSession().setAttribute("S_CABZF", "N");
+              					requests.getSession().setAttribute("loginname",  name);
+              					requests.getSession().setAttribute("SY_TC","1");//首页_弹出  首页弹出层判断 登录进来的是1 弹出层上 点过确定的是2
+              					
+              					
+              			    	if("3".equals(userList.get(0).get("ISXYB"))){
+              			    		//当用户为县市区部门用户是需要跳转到手机短信验证码页面
+              			    		requests.getSession().setAttribute("TEL", userList.get(0).get("JSSJHM"));
+              			    		return "/loginMsg";
+              			    	}
+              			    	
+            				}else{
+            					String message = "用户名和密码不正确，请重新输入。";
+            					model.addAttribute("msg", message);
+            					return "/login";
+            				}
+        				}else{
+        					String message ="用户已停用。";
+         				   model.addAttribute("message", message);
+         				   return "/login";
+        				}
+        			}else{
+        				   String message ="无此用户。";
+        				   model.addAttribute("message", message);
+        				   return "/login";
+        			}
+        		}
+        	}			
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute(MyFormAuthentication.DEFAULT_ERROR_KEY_ATTRIBUTE_NAME, e.getMessage());
+			return "/login";
+		}
+       return "redirect:/index";
+    }
+    @RequestMapping(value = "/nbzrLogin", method = RequestMethod.POST)
+    public Object login2(HttpServletRequest request,HttpServletResponse response,Model model) {
+    	Subject subject = SecurityUtils.getSubject();//取得当前登录人
+    	String pass = request.getParameter("password");
+    	
+    	String name = request.getParameter("username");
+    	
+    	MyFormAuthentication myFormAuthentication = new MyFormAuthentication();
+    	try {
+    		if(name.trim()!=""){
+        		if(pass.trim()!=""){
+        			String userName = usersService.getUserName(name);
+        			if(userName!=null){
+        				String userPass = usersService.vilidate(userName);
+        				if(name.equals(userName) && pass.equals(userPass)){
+        					subject.login(myFormAuthentication.createToken2(request, response));
+        					Map param = new HashMap();
+          					String username =  UserPublic.login();
+          					param.put("YHM", username);
+          					List<HashMap<String, Object>> userList = usersService.getUserList(param);//获取登陆用户
+          					HttpServletRequest requests = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+          					requests.getSession().setAttribute("BMID", userList.get(0).get("BMID").toString());
+          					requests.getSession().setAttribute("SY_TC","1");//首页_弹出  首页弹出层判断 登录进来的是1 弹出层上 点过确定的是2
+          					requests.getSession().setAttribute("S_Y", "1") ; 
+          					requests.getSession().setAttribute("ISCA", "N") ; 
+          			    	requests.getSession().setAttribute("S_CABZF",userList.get(0).get("CABZF").toString());
+          			    
+          			    		
+        				}else{
+        					String message = "用户名和密码不正确，请重新输入。";
+        					model.addAttribute("msg", message);
+        					return "/nbzr";
+        				}
+        			}else{
+        				   String message ="无此用户。";
+        				   model.addAttribute("message", message);
+        				   return "/nbzr";
+        			}
+        		}
+        	}			
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute(MyFormAuthentication.DEFAULT_ERROR_KEY_ATTRIBUTE_NAME, e.getMessage());
+			return "/nbzr";
+		}
+       return "redirect:/index";
+    } 
+    
+    
+    
+    @SystemLog(operationType="select",operationName="根据信息事项主键id和信息事项内容id获取各自对象") 
+	@RequestMapping("/testca")
+	@ResponseBody
+ 
+	public  Map  testca(JqgridPage jqgridPage,WebRequest request){
+		Map<String, Object> paraMap = ParameterUtil.getFilterMap(request);
+		String username =  UserPublic.login();
+    	paraMap.put("YHM", username);
+		List<HashMap<String, Object>> userList = usersService.getUserList(paraMap);//获取登陆用户
+	    String ca =   (String)paraMap.get("passport");
+	    if(userList.get(0).get("CABZF").toString().equals(ca)){
+	    	paraMap.put("SFYX", "Y");
+	    	paraMap.put("CABZF", ca);
+	    	HttpServletRequest requests = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+	    	requests.getSession().setAttribute("S_Y", "1") ;
+	    	requests.getSession().setAttribute("S_CABZF",ca);
+//	    	requests.getSession().getAttribute("S_Y")
+	    }else{
+	    	paraMap.put("SFYX", "N");
+	    }
+		/*int i = yyclService.updateYybz(param); 
+		if (i>0){
+			param.put("yybz", "1");
+		}else{
+			param.put("yybz", "0");
+		}*/
+		return paraMap;
+	}
+    @SystemLog(operationType="select",operationName="证书签名验证") 
+	@RequestMapping("/netsign")
+	@ResponseBody
+	public  Map  netsign(JqgridPage jqgridPage,WebRequest request,HttpServletRequest request2) throws Exception{
+		Map<String, Object> paraMap = ParameterUtil.getFilterMap(request);
+		String username =  UserPublic.login();
+	 
+		   	String txtCert =paraMap.get("passport").toString();//证书
+//		   	String zsxlh =paraMap.get("loginuser")+"";//证书序列号
+		   	String txtSignedData =paraMap.get("txtSignedData")+"";//签名结果
+		    String IDCardNo =paraMap.get("IDCardNo")+"";//身份证号
+		   	String  zs_yw = "123456"; //证书原文  
+		   	
+//			 txtCert ="MIIDyTCCA2ygAwIBAgIIdMEAKQAATGMwDAYIKoEcz1UBg3UFADBSMQswCQYDVQQGEwJDTjEvMC0GA1UECgwmWmhlamlhbmcgRGlnaXRhbCBDZXJ0aWZpY2F0ZSBBdXRob3JpdHkxEjAQBgNVBAMMCVpKQ0EgT0NBMTAeFw0xNjA3MTkwODMwMDFaFw0xODA3MTkwNzE0NDJaMHkxCzAJBgNVBAYTAkNOMQ8wDQYDVQQIDAbmtZnmsZ8xDzANBgNVBAcMBuWugeazojEVMBMGA1UECgwM5Y2V5L2N5ZCN56ewMSEwHwYDVQQLDBjlroHms6LnlLXlrZDmlL/liqHlpJbnvZExDjAMBgNVBAMMBUNO6aG5MFkwEwYHKoZIzj0CAQYIKoEcz1UBgi0DQgAEqNLKPdgf5BSvfDa22OchP9XfHITc2LQ34tWR2XEgmRqtQHvfR1Jc68pmaHvomtWW0fqkQqETMyw2ZbOu6CNNEqOCAgEwggH9MAwGA1UdEwQFMAMBAQAwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMAsGA1UdDwQEAwIAwDARBglghkgBhvhCAQEEBAMCAIAwHgYIKoEc0BQEAQEEEjIyMDMwMTE5ODYwNzE5MDAxNjAfBgNVHSMEGDAWgBSn07EkkCAdPbRU7ks3KFKRrixqIjCBqAYDVR0fBIGgMIGdMIGaoIGXoIGUhoGRbGRhcDovL2xkYXAuempjYS5jb20uY24vQ049WkpDQSBPQ0ExLENOPVpKQ0EgT0NBMSwgT1U9Q1JMRGlzdHJpYnV0ZVBvaW50cywgbz16amNhP2NlcnRpZmljYXRlUmV2b2NhdGlvbkxpc3Q/YmFzZT9vYmplY3RjbGFzcz1jUkxEaXN0cmlidXRpb25Qb2ludDCBogYIKwYBBQUHAQEEgZUwgZIwgY8GCCsGAQUFBzAChoGCbGRhcDovL2xkYXAuempjYS5jb20uY24vQ049WkpDQSBPQ0ExLENOPVpKQ0EgT0NBMSwgT1U9Y0FDZXJ0aWZpY2F0ZXMsIG89empjYT9jQUNlcnRpZmljYXRlP2Jhc2U/b2JqZWN0Q2xhc3M9Y2VydGlmaWNhdGlvbkF1dGhvcml0eTAdBgNVHQ4EFgQU8hPn7KXBRy6p8zEYgqf2OLta8tswDAYIKoEcz1UBg3UFAANJADBGAiEAzqJ4hLcf9wtXjdD19BJNWkPuISXqwqXYUwfmyKXNoQUCIQCbg0kHBmHoi9v4+4tXZIQAW0ZXuWm2tbHq0GRo33Y/Wg==";//证书 
+//		   	 txtSignedData ="MEUEIQCBHI9QbCT3Di6jiz283wcpoN5YjTuv88RUmCON+sOhLgQgZsINSgJVrOu98tC6P81pOdAG3t0RK5pJ0FqbvzL6UGI=";//签名结果 
+//		   	 zs_yw = "123456"; //证书原文  
+		   	
+		   	
+		   	
+		   	paraMap.put("YHM", username);
+			List<HashMap<String, Object>> userList = usersService.getUserList(paraMap);//获取登陆用户
+		   	
+//			String zsxlh2 = userList.get(0).get("CABZF")+"";
+			String IDCardNo2 = userList.get(0).get("CABZF")+"";
+			
+			/**使用证书序列号判断登陆人时候人key一致
+		   	*if(zsxlh.equals("")){
+		   	*	paraMap.put("SFYX", "Q");//不选证书直接取消
+		   	*}else if(zsxlh2.equals(zsxlh.replace(" ", ""))){
+			*/
+			/**通过身份证号判断是否人证一致*/
+		   	if(IDCardNo.equals("")){
+		   		paraMap.put("SFYX", "Q");//不选证书直接取消
+		   	}else if(IDCardNo2.equals(IDCardNo.replace(" ", ""))){ 
+		   		
+		   		/**rsa 证书验签名开始*/
+//				   	byte[] s64code = txtCert.getBytes("GBK"); 
+//					tmp.NSAttachedVerify(s64code); 
+//					int ret=tmp.getLastErrnum();
+		   		/**rsa 证书验签名结束*/
+		   		/**sm2证书签名开始*/	
+ 
+//		   		PropertyResourceBundle res = new PropertyResourceBundle( new FileInputStream("E:/tools/server/apache-tomcat-7.0.47/wtpwebapps/nbggxy/WEB-INF/classes/netsign.properties" ) );
+//		   		NetSignServer nss = new NetSignServer( res );
+		   		
+		   try{	
+		   		///替换JDK的两个包local_policy与US_export_policy
+			   //在D盘添加HOME目录
+			   //过滤
+		   	    NetSignServer nss = new NetSignServer();
+		   
+		   	// org.bouncycastle.cms.CMSTypedData
+		   	    
+//		   	 System.out.println( "test1:" +txtCert) ;
+		   		X509Certificate x509cert = parseCert(txtCert) ;
+//		   	  System.out.println( "test1:" +"1111111111111111111111111") ;
+//		   	System.out.println( "test2:" +zs_yw) ;
+//		   	System.out.println( "test3:" +txtSignedData) ;
+//		   	System.out.println( "test4:" +x509cert) ;
+		   		nss.NSVerifyPlainSignedMsg( zs_yw.getBytes() , txtSignedData , x509cert ) ;
+//		   		System.out.println( "test1:" +"22222222222222222222222222222") ;
+//	  			System.out.println( nss.getLastErrnum() );
+//	  			System.out.println( nss.getLastErrnum()+"" );
+//	  			System.out.println( Math.abs(nss.getLastErrnum() ));
+//					java.security.cert.CertificateFactory factory = java.security.cert.CertificateFactory.getInstance("X.509", "INFOSEC");
+//					byte[] certbs = Base64.decodeBase64(txtCert.getBytes("GBK"));
+//					X509Certificate cert = (java.security.cert.X509Certificate) factory.generateCertificate(new ByteArrayInputStream(certbs));
+//					tmp.NSVerifyPlainSignedMsg(zs_yw.getBytes(), txtSignedData, cert);
+				/**sm2证书签名结束*/		
+				   			 
+					 String  ret=nss.getLastErrnum()+"";
+				/**ret验签名结果代码，目前强制验签名正确做测试，测试完需要将ret=0注释掉*/		
+//					  ret=0;
+//					 System.out.println(ret+"aaaaaaaaaaaaaaaaaaa");
+					if (ret.equals("0"))
+					{
+						paraMap.put("SFYX", "Y"); 
+				/**控制ca是否验证过，正式发布要将下行注释代码去掉*/
+						request2.getSession().setAttribute("S_Y", "1") ;
+					}
+					else
+					{
+						paraMap.put("SFYX", "N"); //CA用户验证失败
+					}
+		   } catch (NoSuchAlgorithmException e) {   
+		         e.printStackTrace();   
+		     } 
+		   	}else{
+		   		paraMap.put("SFYX", "W");//无此CA用户
+		   	}
+		return paraMap;
+	}
+    
+    
+    @SystemLog(operationType="select",operationName="证书签名验证") 
+   	@RequestMapping("/netsignForCxjk")
+   	@ResponseBody
+    
+   	public  Map  netsignForCxjk(JqgridPage jqgridPage,WebRequest request,HttpServletRequest request2) throws Exception{
+   		Map<String, Object> paraMap = ParameterUtil.getFilterMap(request);
+   		   	String txtCert =paraMap.get("passport").toString();//证书 
+   		   	String txtSignedData =paraMap.get("txtSignedData")+"";//签名结果
+   		    String IDCardNo =paraMap.get("IDCardNo")+"";//身份证号
+   		   	String  zs_yw = "123456"; //证书原文  
+
+ 
+   		   	if(IDCardNo.equals("")){
+   		   		paraMap.put("SFYX", "Q");//不选证书直接取消
+   		   	}else { 
+   		   	    NetSignServer nss = new NetSignServer(); 
+   		   		X509Certificate x509cert = parseCert(txtCert) ; 
+   		   		nss.NSVerifyPlainSignedMsg( zs_yw.getBytes() , txtSignedData , x509cert ) ; 
+   				String  ret=nss.getLastErrnum()+""; 
+   					if (ret.equals("0")){
+   						paraMap.put("SFYX", "Y");  
+   					}else{
+   						paraMap.put("SFYX", "N"); //CA用户验证失败
+   					}
+   		   	} 
+   		return paraMap;
+   	}
+
+    public static void main(String[] args) throws  Exception {
+     	String txtCert ="MIIDyTCCA2ygAwIBAgIIdMEAKQAATGMwDAYIKoEcz1UBg3UFADBSMQswCQYDVQQGEwJDTjEvMC0GA1UECgwmWmhlamlhbmcgRGlnaXRhbCBDZXJ0aWZpY2F0ZSBBdXRob3JpdHkxEjAQBgNVBAMMCVpKQ0EgT0NBMTAeFw0xNjA3MTkwODMwMDFaFw0xODA3MTkwNzE0NDJaMHkxCzAJBgNVBAYTAkNOMQ8wDQYDVQQIDAbmtZnmsZ8xDzANBgNVBAcMBuWugeazojEVMBMGA1UECgwM5Y2V5L2N5ZCN56ewMSEwHwYDVQQLDBjlroHms6LnlLXlrZDmlL/liqHlpJbnvZExDjAMBgNVBAMMBUNO6aG5MFkwEwYHKoZIzj0CAQYIKoEcz1UBgi0DQgAEqNLKPdgf5BSvfDa22OchP9XfHITc2LQ34tWR2XEgmRqtQHvfR1Jc68pmaHvomtWW0fqkQqETMyw2ZbOu6CNNEqOCAgEwggH9MAwGA1UdEwQFMAMBAQAwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMAsGA1UdDwQEAwIAwDARBglghkgBhvhCAQEEBAMCAIAwHgYIKoEc0BQEAQEEEjIyMDMwMTE5ODYwNzE5MDAxNjAfBgNVHSMEGDAWgBSn07EkkCAdPbRU7ks3KFKRrixqIjCBqAYDVR0fBIGgMIGdMIGaoIGXoIGUhoGRbGRhcDovL2xkYXAuempjYS5jb20uY24vQ049WkpDQSBPQ0ExLENOPVpKQ0EgT0NBMSwgT1U9Q1JMRGlzdHJpYnV0ZVBvaW50cywgbz16amNhP2NlcnRpZmljYXRlUmV2b2NhdGlvbkxpc3Q/YmFzZT9vYmplY3RjbGFzcz1jUkxEaXN0cmlidXRpb25Qb2ludDCBogYIKwYBBQUHAQEEgZUwgZIwgY8GCCsGAQUFBzAChoGCbGRhcDovL2xkYXAuempjYS5jb20uY24vQ049WkpDQSBPQ0ExLENOPVpKQ0EgT0NBMSwgT1U9Y0FDZXJ0aWZpY2F0ZXMsIG89empjYT9jQUNlcnRpZmljYXRlP2Jhc2U/b2JqZWN0Q2xhc3M9Y2VydGlmaWNhdGlvbkF1dGhvcml0eTAdBgNVHQ4EFgQU8hPn7KXBRy6p8zEYgqf2OLta8tswDAYIKoEcz1UBg3UFAANJADBGAiEAzqJ4hLcf9wtXjdD19BJNWkPuISXqwqXYUwfmyKXNoQUCIQCbg0kHBmHoi9v4+4tXZIQAW0ZXuWm2tbHq0GRo33Y/Wg==";//证书 
+	   	String txtSignedData ="MEUEIQCBHI9QbCT3Di6jiz283wcpoN5YjTuv88RUmCON+sOhLgQgZsINSgJVrOu98tC6P81pOdAG3t0RK5pJ0FqbvzL6UGI=";//签名结果 
+	   	String  zs_yw = "123456"; //证书原文  
+ 	
+	    NetSignServer tmp = new NetSignServer();
+//	    
+// 
+//			
+			X509Certificate x509cert = parseCert(txtCert) ;
+  			tmp.NSVerifyPlainSignedMsg( zs_yw.getBytes("GBK") , txtSignedData , x509cert ) ;
+  			System.out.println(tmp.getLastErrnum());
+  			
+  			
+//    	for(int i=0 ;i<100;i++){
+//    	String UUID1 = UUIDGenerator.getUUID();
+//    	System.out.println( "'"+UUID1+"'," ) ;
+//    	}
+ 
+    	
+    	
+  	 
+   }
+ 
+    public static X509Certificate parseCert( String b64Cert ) throws Exception {
+        CertificateFactory cf = CertificateFactory.getInstance( "X.509" , "INFOSEC" );
+//        X509Certificate cert = ( X509Certificate ) cf.generateCertificate( new ByteArrayInputStream( Base64.decode( b64Cert ) ) );
+        X509Certificate cert = ( X509Certificate ) cf.generateCertificate( new ByteArrayInputStream(Base64.decodeBase64(b64Cert.getBytes("UTF-8"))) );
+        System.out.println( "subject:" + cert.getSubjectDN().getName() );
+        System.out.println( "issuer:" + cert.getIssuerDN().getName() ) ;
+        return cert ;
+     }
+    
+    @RequestMapping(value = "/loginMsg", method = RequestMethod.POST)
+    public Object loginMsg(HttpServletRequest request,HttpServletResponse response,Model model) {
+    	
+       return "redirect:/loginMsg";
+    } 
+ 
+    /**
+	 * 县市区信用办管理员用户、县市区部门用户登录，发送验证码
+	 * @param SJHM 手机号码
+	 * @param request
+	 * @return
+	 */
+ 	@SystemLog(operationType="insert",operationName="发送验证码") 
+	@RequestMapping("/sendMsg")
+	@ResponseBody
+	public String sendMsg(WebRequest request){
+		Map<String, Object> map = ParameterUtil.getFilterMap(request);
+		System.out.print(map.toString());
+		
+		Map<String,Object> resultMap = new HashMap<String, Object>();
+		String code="1000";
+		String msg="";
+		String result = null;
+		String tel=map.get("tel")+"";
+		String yzm=getRandNum();
+		
+		try {
+			if(tel!=null){
+				 //发送短信验证码
+				 String nbggxyApi="http://10.19.13.242:8080/nbggxy-api";
+				 //RestTemplate rt = new RestTemplate();
+				 map.put("dlrlxdh", tel);
+				 map.put("content", "信用平台登录验证码为："+yzm+"。【宁波市信用中心】");
+				 result = rt.postForObject(nbggxyApi+"/api/yysq/messageone",map, String.class);
+		    	 
+		    	 //插入到XT_Login_YZM 验证码表中
+		    	 Map<String,Object> yzmMap = new HashMap<String, Object>();
+			  	 yzmMap.put("UUID", UUIDGenerator.getUUID() );
+			 	 yzmMap.put("YZM", yzm);
+			 	 yzmMap.put("TEL", tel);
+			 	 yzmMap.put("SFYX", "1");
+			 	 usersService.addYzm(yzmMap);
+			 	 
+			 	code="1";//成功
+			}else{
+				code="2";//电话号码为空
+			}
+		} catch (Exception ex) {
+			code="1000";
+			msg="校验失败，请重新输入";
+			logger.error(msg, ex);
+		}
+	 
+    	
+		return code;
+	}
+ 	
+ 	
+ 	 
+	     /**
+		   * 县市区信用办管理员用户、县市区部门用户登录，验证手机验证码是否正确
+		   * @param SJHM 手机号码
+		   * @param YZM  验证码
+		   * 
+		   * @return
+	     */
+	 	@SystemLog(operationType="update",operationName="检验验证码") 
+		@RequestMapping("/checkMsg")
+	 	@ResponseBody
+		public int checkMsg(WebRequest request){
+			Map<String, Object> paramMap = ParameterUtil.getFilterMap(request);
+			System.out.print(paramMap.toString());
+			
+			paramMap.put("SFYX", "1");
+			int count  =usersService.checkYzm(paramMap);
+			if(count==1){
+				//验证通过
+				paramMap.put("SFYX", "2");
+				usersService.updateYzm(paramMap);
+				HttpServletRequest requests = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+				requests.getSession().setAttribute("S_Y", "1") ; 
+				//去掉session中的手机号码
+				requests.getSession().removeAttribute("TEL");
+			}else{
+				//验证失败
+				
+				
+				
+			}
+		 
+			 return  count;
+		}
+ 	
+ 	
+ 	
+      /**
+       * 获取随机数作为验证码
+       * @return
+       */
+	  public static String getRandNum( ) {
+		  String sixString ="";
+		  //元素
+		  int[] array = {0,1,2,3,4,5,6,7,8,9};
+
+		  //随机对象
+		  Random rand = new Random();
+
+		  //循环产生
+		  for (int i = 10; i > 1; i--) {
+		  int index = rand.nextInt(i);
+		  int tmp = array[index];
+		  array[index] = array[i - 1];
+		  array[i - 1] = tmp;
+		  }
+
+		  //拼接结果为字符串
+		  int result = 0;
+		  for(int i = 0; i < 6; i++)
+		  result = result * 10 + array[i];
+		  sixString = Integer.toString(result);
+
+		  //有可能出现5位数，前面加0补全
+		  if (sixString.length() == 5) {
+		  sixString = "0" + sixString;
+		  }
+		  //打印结果
+
+		  System.out.println(sixString);
+		  return sixString;
+		}
+	  
+}

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cssnb.baseframework.quickstart.dao.sjgx.ResMapper">
+    
+    <select id="findResFieldList" resultType="map">
+		SELECT A.RES_SHOW_NAME,A.RES_NAME,A.DATA_TYPE,A.DATA_LENGTH,decode(A.IS_PK,0,'N',1,'Y') IS_PK,A.NULLABLE FROM RES_FIELD A 
+		<where>
+		     A.RES_TABLE_ID LIKE ''||#{resId}||'' AND A.RES_SHOW_NAME IS NOT NULL
+		</where>
+	</select>
+    
+    
+    
+    <!-- 通用接口 -->
+	<select id="findInfoList" resultType="map" parameterType="map">
+		select  ${colStr} from ${tableName}
+	</select>
+	
+	<select id="getDetail" resultType="map" parameterType="map">
+		select ${colStr} from ${tableName} where ${pkcol}='${pk}'
+	</select>
+	
+	<select id="getTableInfoById" resultType="map" parameterType="String">
+		select resource_name,resource_name_cn from RES_TABLE 
+		<where>
+            <if test='id != null and id != "" '>
+                resource_id like ''||#{id}||''
+            </if>
+        </where>
+	</select>
+	
+	<select id="getHeadListById" resultType="map" parameterType="String">
+		select show_content,RES_NAME,IS_PK from res_data_show_conf a,res_field b 
+		<where>
+		    a.res_field_id=b.id  AND STATE=1 and LIST_SHOW_FLAG=1
+            <if test='id != null and id != "" '>
+                and res_table_id like ''||#{id}||''
+            </if>
+        </where>
+        order by a.order_id
+	</select>
+	
+	<select id="getColsById" resultType="map" parameterType="String">
+		select RES_NAME from res_data_show_conf a,res_field b 
+		<where>
+		    a.res_field_id=b.id  AND STATE=1 and LIST_SHOW_FLAG=1
+            <if test='id != null and id != "" '>
+                and res_table_id like ''||#{id}||''
+            </if>
+        </where>
+        order by a.order_id
+	</select>
+	
+	<select id="getColsAndShowNameByIdForDetail" resultType="map" parameterType="String">
+		select RES_NAME,SHOW_CONTENT from res_data_show_conf a,res_field b 
+		<where>
+		    a.res_field_id=b.id  AND STATE=1 and DETAIL_SHOW_FLAG=1 AND B.IS_PK !=1
+            <if test='id != null and id != "" '>
+                and res_table_id like ''||#{id}||''
+            </if>
+        </where>
+        order by a.order_id
+	</select>
+	
+	<select id="getPKById" resultType="map" parameterType="String">
+		select RES_NAME from res_data_show_conf a,res_field b 
+		<where>
+		    a.res_field_id=b.id  AND STATE=1 and LIST_SHOW_FLAG=1 AND IS_PK=1
+            <if test='id != null and id != "" '>
+                and res_table_id like ''||#{id}||''
+            </if>
+        </where>
+	</select>
+	
+	<!-- 增加临时的非通用接口 -->
+	<!-- 企业登记信息 -->
+	<select id="findQYDJXXList" resultType="map">
+		select NBXH,QYMC,FDDBR,ZS,DH,YZBM from zx_gs_qydj
+		<where>
+            <if test='qymc != null and qymc != "" '>
+                and QYMC like '%'||#{qymc}||'%'
+            </if>
+            <if test='fddbr != null and fddbr != "" '>
+                and FDDBR like ''||#{fddbr}||''
+            </if>
+        </where>
+	</select>
+	
+	<select id="getQYDJXXDetail" resultType="map" parameterType="String">
+		select NBXH,ZCH,QYMC,FDDBR,ZS,DH,YZBM,JYFW,JYCS from zx_gs_qydj 
+		<where>
+            <if test='nbxh != null and nbxh != "" '>
+                NBXH like ''||#{nbxh}||''
+            </if>
+        </where>
+	</select>
+	
+	<!-- 纳税人信息 -->
+	<select id="findNSRXXList" resultType="map">
+		SELECT NSRSBH,NSRMC,FDDBRMC,DHHM,SCJYDZ,LRRQ FROM RES_SWG_DJ_NSRXX
+		<where>
+            <if test='NSRMC != null and NSRMC != "" '>
+                and NSRMC like '%'||#{NSRMC}||'%'
+            </if>
+            <if test='FDDBRMC != null and FDDBRMC != "" '>
+                and FDDBRMC like ''||#{FDDBRMC}||''
+            </if>
+        </where>
+	</select>
+	
+	<select id="getNSRXXDetail" resultType="map" parameterType="String">
+		SELECT NSRMC,FDDBRMC,DHHM,SCJYDZ,LRRQ FROM RES_SWG_DJ_NSRXX
+		<where>
+            <if test='NSRSBH != null and NSRSBH != "" '>
+                NSRSBH like ''||#{NSRSBH}||''
+            </if>
+        </where>
+	</select>
+	
+	<!-- 企业投资方信息 -->
+	<select id="findQYTZFXXList" resultType="map">
+		SELECT NBXH,SBXH,QYMC,CZE,ZBFB,BZ,SFZJHM FROM zx_gs_qytzf
+		<where>
+            <if test='qymc != null and qymc != "" '>
+                and QYMC like '%'||#{qymc}||'%'
+            </if>
+            <if test='SFZJHM != null and SFZJHM != "" '>
+                and SFZJHM like ''||#{SFZJHM}||''
+            </if>
+        </where>
+	</select>
+	
+	<select id="getQYTZFXXDetail" resultType="map">
+		SELECT QYMC,CZE,ZBFB,BZ,SFZJHM,LRRQ,RKRQ FROM zx_gs_qytzf
+		<where>
+            <if test='nbxh != null and nbxh != "" '>
+               and NBXH like ''||#{nbxh}||''
+            </if>
+             <if test='sbxh != null and sbxh != "" '>
+                and sbxh like ''||#{sbxh}||''
+            </if>
+        </where>
+	</select>
+	
+	<!-- 年检信息 -->
+	<select id="findNJXXList" resultType="map">
+		SELECT QYMC,A.NBXH,A.ND,A.NJRQ,A.NJJG,A.RKRQ,A.LRRQ FROM ZX_GS_NJ A,ZX_GS_QYDJ B  
+		<where>
+		    A.NBXH=B.NBXH
+            <if test='qymc != null and qymc != "" '>
+                and B.QYMC like '%'||#{qymc}||'%'
+            </if>
+            <if test='ND != null and ND != "" '>
+                and A.ND like ''||#{ND}||''
+            </if>
+        </where>
+	</select>
+	
+	<select id="getNJXXDetail" resultType="map">
+		SELECT QYMC,A.NBXH,A.ND,A.NJRQ,A.NJJG,A.RKRQ,A.LRRQ FROM ZX_GS_NJ A,ZX_GS_QYDJ B 
+		<where>
+		    A.NBXH=B.NBXH
+            <if test='nbxh != null and nbxh != "" '>
+               and A.NBXH like ''||#{nbxh}||''
+            </if>
+             <if test='ND != null and ND != "" '>
+                and A.ND like ''||#{ND}||''
+            </if>
+        </where>
+	</select>
+	
+</mapper>
