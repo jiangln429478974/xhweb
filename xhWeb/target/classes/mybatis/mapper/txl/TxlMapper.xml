@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cssnb.txl.dao.TxlMapper" >
+
+<!-- 按部门父目录加载 -->
+<select id="initTXLList" resultType="java.util.HashMap"  parameterType="map">
+ select distinct bmmc ,id,rkrq  from xt_bmb 
+ order by bmmc asc ,rkrq desc 
+</select>
+
+<!-- 按部门子目录加载 -->
+<select id="initLowerTxlListGroup" resultType="java.util.HashMap"  parameterType="map">
+select  a.uuid as guuid , a.name,
+	 c.yhm ,c.id as yhid ,c.jssjhm ,c.xm,d.bmmc 
+	from  xt_group a, xt_group_user b ,xt_yhb c ,xt_bmb d 
+	where ( a.userid =#{USERID} or a.type='1')
+	 and  a.uuid=#{GUUID}
+	 and  a.uuid=b.guuid 
+	 and  b.userid=c.id 
+	 and c.bmid= d.id 
+order by guuid ,a.rkrq desc 
+</select>
+
+<!-- 按组 父目录加载 -->
+ <select id="initTXLListGroup" resultType="java.util.HashMap"  parameterType="map"  >
+    select uuid, name, userid, type, to_char(rkrq,'yyyy-mm-dd') rkrq , to_char(last,'yyyy-mm-dd') last from xt_group
+    <where >
+        type=1  or userid = #{USERID}  
+     </where>
+    order by last desc 
+</select>
+
+<!-- 按组 子目录加载 -->
+<select id="initLowerTxlList" resultType="java.util.HashMap"  parameterType="map">
+    select b.id ,a.bmmc ,b.xm,b.jssjhm  from xt_bmb a,xt_yhb b 
+   where a.id=b.bmid  
+   and b.bmid=#{BMID}
+   order by b.xm asc,a.RKRQ desc
+</select>
+
+<!-- 新建组 -->
+<insert id="insertGroup"   parameterType="map">
+insert into xt_group
+  (uuid, name, userid, type, rkrq, last)
+values
+  (#{UUID},#{NAME} , #{YHM}, #{TYPE}, sysdate, sysdate)
+</insert>
+
+<!-- 获取组 -->
+<select id="getGroupList" resultType="java.util.HashMap"  parameterType="map"  >
+    select uuid, name, userid, type, to_char(rkrq,'yyyy-mm-dd') rkrq , to_char(last,'yyyy-mm-dd') last from xt_group
+    <where >
+     ( type=1  or userid = #{USERID}  )
+     <if test="fbsjstart !=null and fbsjstart!='' and fbsjend!=null and fbsjend!=''">
+           and to_char(rkrq,'yyyy-mm-dd') between #{fbsjstart} and #{fbsjend}
+        </if>
+        <if test="groupName != null and groupName !='' ">    
+		   and name like '%${groupName}%'
+		</if> 
+     </where>
+    order by type , last desc 
+</select>
+
+<!-- 获取组中的用户 -->
+<select id="getUserInGroupList" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+select a.UUID ,
+       a.USERNAME ,
+       a.YHM,
+       b.jssjhm,
+       c.bmmc,
+      to_char(a.rkrq,'yyyy-mm-dd') rkrq 
+      from XT_GROUP_USER a ,xt_yhb b,xt_bmb  c 
+      <where>
+      a.userid=b.id and  b.bmid=c.id 
+     <if test="GUUID!=null and GUUID!=''">and  a.GUUID=#{GUUID}</if>
+     <if test="USERID!=null and USERID!=''">and a.USERID=#{USERID}</if>
+     <if test="BMID!=null and BMID!=''">and b.BMID=#{BMID}</if>
+    </where>  
+ order by a.RKRQ desc  
+</select>
+
+<!-- 判断是否为组 -->
+<select  id="isBM" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+select count(*) as ISBM  from xt_bmb where id in
+ (select id from xt_bmb
+  <where>
+  1=1
+  <if test="USERID!=null and USERID!=''">
+    and  id =#{USERID}
+   </if>
+   </where> )   
+</select>
+
+<!-- 用户分组模块 -->
+<insert id="insertUserToGroup" parameterType="java.util.HashMap" >
+ 	insert into XT_GROUP_USER
+  (UUID,GUUID,USERID,RKRQ,USERNAME,YHM)
+values
+  (#{UUID},#{GUUID},#{USERID},#{RKRQ},#{USERNAME},#{YHM})
+</insert>
+
+<!-- 更新组的类别 -->
+<select id="updateType" parameterType="java.util.HashMap">
+    UPDATE  XT_GROUP SET TYPE=#{TYPE} WHERE UUID=#{GUUID}
+</select>
+
+<!-- 更新组名 重命名功能-->
+<select id="editName" parameterType="java.util.HashMap">
+    UPDATE  XT_GROUP SET NAME=#{NAME} WHERE UUID=#{GUUID}
+</select>
+
+<!-- 更新上次修改时间 -->
+<select id="updateLastTimeGroup" parameterType="java.util.HashMap" >
+	update xt_group  set last=sysdate  where uuid =#{UUID}
+</select>
+ 
+<!-- 删除组 -->
+<delete id="deleteData" parameterType="java.util.HashMap" >
+   delete from XT_GROUP where UUID=#{GUUID}
+</delete>
+
+<!-- 删除某组中的联系人 -->
+<delete id="deleteDateaInGroup" parameterType="java.util.HashMap" >
+   delete  from xt_group_user where GUUID=#{GUUID}  
+</delete>
+<!-- <delete id="deleteFromGroup" parameterType="java.util.HashMap" > -->
+<!--    delete from XT_GROUP_USER where GUUID=#{GUUID} -->
+<!-- </delete> -->
+</mapper>
