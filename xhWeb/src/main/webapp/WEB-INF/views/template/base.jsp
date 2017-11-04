@@ -293,7 +293,7 @@ jQuery(document).ready(function() {
    Layout.init(); // init layout
    Demo.init(); // init demo features
    QuickSidebar.init(); // init quick sidebar
-   Tasks.initDashboardWidget(); // init tash dashboard widget  
+   Tasks.initDashboardWidget(); // init tash dashboard widget    
  //常用功能默认打开
  
  //modify by wangmin at 20160627 for关闭搜索框
